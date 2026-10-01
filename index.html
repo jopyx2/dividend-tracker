@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>배당주 적정주가 추적기</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="배당추적기">
+<style>
+  :root {
+    --ink-primary: #1c2128;
+    --ink-secondary: #4b5563;
+    --ink-muted: #8a94a3;
+    --surface: #ffffff;
+    --surface-alt: #f7f8fa;
+    --border: #e4e7ec;
+    --accent: #2f6fed;
+    --good: #1a7f5a;
+    --good-bg: #e6f4ef;
+    --strong: #1d4ed8;
+    --strong-bg: #e8edfc;
+    --neutral: #5b6472;
+    --neutral-bg: #eef0f2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--surface-alt);
+    color: var(--ink-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .subtitle { color: var(--ink-muted); font-size: 13px; margin-bottom: 24px; }
+  .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-tile {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 20px; min-width: 140px;
+  }
+  .stat-tile .label { font-size: 12px; color: var(--ink-muted); margin-bottom: 4px; }
+  .stat-tile .value { font-size: 24px; font-weight: 600; }
+  .stat-tile.good .value { color: var(--good); }
+  .stat-tile.strong .value { color: var(--strong); }
+  .criteria {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 24px; font-size: 13px; color: var(--ink-secondary); line-height: 1.9;
+  }
+  .criteria b { color: var(--ink-primary); }
+  .legend-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px 0 10px; vertical-align: middle;
+  }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  thead th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em;
+    color: var(--ink-muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--border);
+    background: var(--surface-alt);
+  }
+  td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--ink-secondary); }
+  tr:last-child td { border-bottom: none; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .center { text-align: center; }
+  th.num { text-align: right; }
+  th.center { text-align: center; }
+  .col-symbol { position: relative; }
+  .col-symbol .symbol { font-weight: 700; color: var(--ink-primary); font-size: 14px; }
+  .col-symbol .sector { font-size: 11px; color: var(--ink-muted); }
+  .row-buy-green { background: var(--good-bg); box-shadow: inset 3px 0 0 var(--good); }
+  .row-buy-green .symbol { color: var(--good); }
+  .row-buy-blue { background: var(--strong-bg); box-shadow: inset 3px 0 0 var(--strong); }
+  .row-buy-blue .symbol { color: var(--strong); }
+  .dot {
+    display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { color: var(--ink-secondary); }
+  th.sortable .arrow { display: inline-block; width: 10px; opacity: 0.35; font-size: 10px; }
+  th.sortable.sorted .arrow { opacity: 1; color: var(--accent); }
+  footer { margin-top: 20px; font-size: 12px; color: var(--ink-muted); }
+  @media (max-width: 720px) {
+    table, thead, tbody, tr { display: block; }
+    thead { display: none; }
+    tr { border-bottom: 8px solid var(--surface-alt); padding: 8px 0; }
+    td { display: flex; justify-content: space-between; border-bottom: none; padding: 6px 14px; }
+    td.num, td.center { text-align: right; }
+    td::before { content: attr(data-label); color: var(--ink-muted); font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>미국 배당주 적정주가 추적기</h1>
+    <div class="subtitle">업데이트: 2026-10-01 19:58 UTC · 대상 19종목</div>
+
+    <div class="stats">
+      <div class="stat-tile strong">
+        <div class="label">종합 파랑(강한 신호)</div>
+        <div class="value">0</div>
+      </div>
+      <div class="stat-tile good">
+        <div class="label">종합 초록(신호 충족)</div>
+        <div class="value">9</div>
+      </div>
+      <div class="stat-tile">
+        <div class="label">전체 추적 종목</div>
+        <div class="value">19</div>
+      </div>
+    </div>
+
+    <div class="criteria">
+      <b>배당률 신호</b> — 현재 배당수익률을 자체 5년 최저/평균/최고와 비교(높을수록 좋음):
+      <span class="legend-dot" style="background:#e5484d"></span>최저 이하
+      <span class="legend-dot" style="background:#e6a700"></span>최저~평균
+      <span class="legend-dot" style="background:#1a7f5a"></span>평균~최고
+      <span class="legend-dot" style="background:#1d4ed8"></span>최고 초과<br>
+      <b>P/E 신호</b> — forward P/E를 자체 5년 Low/Median/High 기준 구간과 비교(낮을수록 좋음):
+      <span class="legend-dot" style="background:#1d4ed8"></span>(Low+Median)/2 이하
+      <span class="legend-dot" style="background:#1a7f5a"></span>~Median
+      <span class="legend-dot" style="background:#e6a700"></span>~(Median+High)/2
+      <span class="legend-dot" style="background:#e5484d"></span>(Median+High)/2 초과<br>
+      <b>종합</b> — 배당률·P/E 신호가 <b>둘 다 초록 또는 파랑</b>일 때 충족(둘 다 파랑이면 종합도 파랑, 그 외 충족이면 초록, 미충족은 회색):
+      <span class="legend-dot" style="background:#1a7f5a"></span>충족
+      <span class="legend-dot" style="background:#1d4ed8"></span>강한 충족
+      <span class="legend-dot" style="background:#c7ccd4"></span>미충족/데이터 부족<br>
+      <span style="color:var(--ink-muted)">원 헤더 클릭 시 내림차순은 파랑→빨강, 오름차순은 빨강→파랑 순이며 회색(데이터 없음)은 항상 맨 아래로 정렬됩니다.</span>
+    </div>
+
+    <table id="dashboard-table">
+      <thead>
+        <tr>
+          <th class="sortable" data-key="symbol" data-type="str">종목 <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="yield" data-type="num">현재 배당률 <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="minyield" data-type="num">5년 최저 배당률 <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="avgyield" data-type="num">5년 평균 배당률 <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="maxyield" data-type="num">5년 최고 배당률 <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="fwdpe" data-type="num">Forward P/E <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="medianpe" data-type="num">5Y P/E (L/M/H) <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="payout" data-type="num">배당성향 <span class="arrow">↕</span></th>
+          <th class="num sortable" data-key="exdiv" data-type="str">배당락일 <span class="arrow">↕</span></th>
+          <th class="center sortable" data-key="yieldcolor" data-type="color">배당률 신호 <span class="arrow">↕</span></th>
+          <th class="center sortable" data-key="pecolor" data-type="color">P/E 신호 <span class="arrow">↕</span></th>
+          <th class="center sortable" data-key="overallcolor" data-type="color">종합 <span class="arrow">↕</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr class="row-buy row-buy-green"
+            data-symbol="LMT" data-yield="0.026" data-minyield="0.01663" data-avgyield="0.02569"
+            data-maxyield="0.0318"
+            data-fwdpe="16.16" data-medianpe="19.04" data-payout="0.5031330630298563"
+            data-exdiv="2026-09-01" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">LMT</div>
+            <div class="sector">산업재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.60%</td>
+          <td class="num" data-label="5년 최저 배당률">1.66%</td>
+          <td class="num" data-label="5년 평균 배당률">2.57%</td>
+          <td class="num" data-label="5년 최고 배당률">3.18%</td>
+          <td class="num" data-label="Forward P/E">16.2</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">14.4 / 19.0 / 30.6</td>
+          <td class="num" data-label="배당성향">50.31%</td>
+          <td class="num" data-label="배당락일">2026-09-01</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.60% · 5년 최저 1.66% / 평균 2.57% / 최고 3.18%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 16.2 · 5년 L/M/H 14.4 / 19.0 / 30.6"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="LOW" data-yield="0.0247" data-minyield="0.01083" data-avgyield="0.01864"
+            data-maxyield="0.0259"
+            data-fwdpe="15.77" data-medianpe="18.05" data-payout="0.4202772963604853"
+            data-exdiv="2026-10-21" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">LOW</div>
+            <div class="sector">소비재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.47%</td>
+          <td class="num" data-label="5년 최저 배당률">1.08%</td>
+          <td class="num" data-label="5년 평균 배당률">1.86%</td>
+          <td class="num" data-label="5년 최고 배당률">2.59%</td>
+          <td class="num" data-label="Forward P/E">15.8</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">14.0 / 18.1 / 23.1</td>
+          <td class="num" data-label="배당성향">42.03%</td>
+          <td class="num" data-label="배당락일">2026-10-21</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.47% · 5년 최저 1.08% / 평균 1.86% / 최고 2.59%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 15.8 · 5년 L/M/H 14.0 / 18.1 / 23.1"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="NEE" data-yield="0.0315" data-minyield="0.0165" data-avgyield="0.02592"
+            data-maxyield="0.03788"
+            data-fwdpe="17.73" data-medianpe="23.25" data-payout="0.5346067415730337"
+            data-exdiv="2026-08-28" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">NEE</div>
+            <div class="sector">유틸리티</div>
+          </td>
+          <td class="num" data-label="현재 배당률">3.15%</td>
+          <td class="num" data-label="5년 최저 배당률">1.65%</td>
+          <td class="num" data-label="5년 평균 배당률">2.59%</td>
+          <td class="num" data-label="5년 최고 배당률">3.79%</td>
+          <td class="num" data-label="Forward P/E">17.7</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">17.4 / 23.2 / 36.8</td>
+          <td class="num" data-label="배당성향">53.46%</td>
+          <td class="num" data-label="배당락일">2026-08-28</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 3.15% · 5년 최저 1.65% / 평균 2.59% / 최고 3.79%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 17.7 · 5년 L/M/H 17.4 / 23.2 / 36.8"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="O" data-yield="0.0584" data-minyield="0.03947" data-avgyield="0.05173"
+            data-maxyield="0.06574"
+            data-fwdpe="33.67" data-medianpe="50.72" data-payout="2.3613138686131383"
+            data-exdiv="2026-09-30" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">O</div>
+            <div class="sector">리츠</div>
+          </td>
+          <td class="num" data-label="현재 배당률">5.84%</td>
+          <td class="num" data-label="5년 최저 배당률">3.95%</td>
+          <td class="num" data-label="5년 평균 배당률">5.17%</td>
+          <td class="num" data-label="5년 최고 배당률">6.57%</td>
+          <td class="num" data-label="Forward P/E">33.7</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">26.2 / 50.7 / 70.2</td>
+          <td class="num" data-label="배당성향">236.13%</td>
+          <td class="num" data-label="배당락일">2026-09-30</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 5.84% · 5년 최저 3.95% / 평균 5.17% / 최고 6.57%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 33.7 · 5년 L/M/H 26.2 / 50.7 / 70.2"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="PEP" data-yield="0.0449" data-minyield="0.02195" data-avgyield="0.03119"
+            data-maxyield="0.04581"
+            data-fwdpe="14.86" data-medianpe="21.97" data-payout="0.7545931758530183"
+            data-exdiv="2026-09-04" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">PEP</div>
+            <div class="sector">필수재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">4.49%</td>
+          <td class="num" data-label="5년 최저 배당률">2.20%</td>
+          <td class="num" data-label="5년 평균 배당률">3.12%</td>
+          <td class="num" data-label="5년 최고 배당률">4.58%</td>
+          <td class="num" data-label="Forward P/E">14.9</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">15.2 / 22.0 / 27.9</td>
+          <td class="num" data-label="배당성향">75.46%</td>
+          <td class="num" data-label="배당락일">2026-09-04</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 4.49% · 5년 최저 2.20% / 평균 3.12% / 최고 4.58%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 14.9 · 5년 L/M/H 15.2 / 22.0 / 27.9"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="PG" data-yield="0.0289" data-minyield="0.02079" data-avgyield="0.02513"
+            data-maxyield="0.02969"
+            data-fwdpe="21.23" data-medianpe="24.77" data-payout="0.6512232415902142"
+            data-exdiv="2026-07-24" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">PG</div>
+            <div class="sector">필수재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.89%</td>
+          <td class="num" data-label="5년 최저 배당률">2.08%</td>
+          <td class="num" data-label="5년 평균 배당률">2.51%</td>
+          <td class="num" data-label="5년 최고 배당률">2.97%</td>
+          <td class="num" data-label="Forward P/E">21.2</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">20.7 / 24.8 / 28.9</td>
+          <td class="num" data-label="배당성향">65.12%</td>
+          <td class="num" data-label="배당락일">2026-07-24</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.89% · 5년 최저 2.08% / 평균 2.51% / 최고 2.97%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 21.2 · 5년 L/M/H 20.7 / 24.8 / 28.9"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="SBUX" data-yield="0.0265" data-minyield="0.01573" data-avgyield="0.02353"
+            data-maxyield="0.03017"
+            data-fwdpe="30.86" data-medianpe="30.87" data-payout="1.4335260115606936"
+            data-exdiv="2026-08-14" data-buy="1"
+            data-yieldcolor="2" data-pecolor="2" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">SBUX</div>
+            <div class="sector">소비재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.65%</td>
+          <td class="num" data-label="5년 최저 배당률">1.57%</td>
+          <td class="num" data-label="5년 평균 배당률">2.35%</td>
+          <td class="num" data-label="5년 최고 배당률">3.02%</td>
+          <td class="num" data-label="Forward P/E">30.9</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">21.4 / 30.9 / 50.6</td>
+          <td class="num" data-label="배당성향">143.35%</td>
+          <td class="num" data-label="배당락일">2026-08-14</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.65% · 5년 최저 1.57% / 평균 2.35% / 최고 3.02%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1a7f5a" title="P/E 신호: forward 30.9 · 5년 L/M/H 21.4 / 30.9 / 50.6"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="UNH" data-yield="0.024" data-minyield="0.01106" data-avgyield="0.01716"
+            data-maxyield="0.0341"
+            data-fwdpe="16.58" data-medianpe="21.43" data-payout="0.5781653746770026"
+            data-exdiv="2026-09-14" data-buy="1"
+            data-yieldcolor="2" data-pecolor="2" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">UNH</div>
+            <div class="sector">헬스케어</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.40%</td>
+          <td class="num" data-label="5년 최저 배당률">1.11%</td>
+          <td class="num" data-label="5년 평균 배당률">1.72%</td>
+          <td class="num" data-label="5년 최고 배당률">3.41%</td>
+          <td class="num" data-label="Forward P/E">16.6</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">9.9 / 21.4 / 27.0</td>
+          <td class="num" data-label="배당성향">57.82%</td>
+          <td class="num" data-label="배당락일">2026-09-14</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.40% · 5년 최저 1.11% / 평균 1.72% / 최고 3.41%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1a7f5a" title="P/E 신호: forward 16.6 · 5년 L/M/H 9.9 / 21.4 / 27.0"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class="row-buy row-buy-green"
+            data-symbol="WM" data-yield="0.017" data-minyield="0.00986" data-avgyield="0.01495"
+            data-maxyield="0.02018"
+            data-fwdpe="22.52" data-medianpe="30.15" data-payout="0.5007072135785007"
+            data-exdiv="2026-09-11" data-buy="1"
+            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
+          <td class="col-symbol">
+            <div class="symbol">WM</div>
+            <div class="sector">필수재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">1.70%</td>
+          <td class="num" data-label="5년 최저 배당률">0.99%</td>
+          <td class="num" data-label="5년 평균 배당률">1.49%</td>
+          <td class="num" data-label="5년 최고 배당률">2.02%</td>
+          <td class="num" data-label="Forward P/E">22.5</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">26.4 / 30.1 / 34.4</td>
+          <td class="num" data-label="배당성향">50.07%</td>
+          <td class="num" data-label="배당락일">2026-09-11</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 1.70% · 5년 최저 0.99% / 평균 1.49% / 최고 2.02%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 22.5 · 5년 L/M/H 26.4 / 30.1 / 34.4"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="ABBV" data-yield="0.0258" data-minyield="0.02609" data-avgyield="0.03487"
+            data-maxyield="0.04535"
+            data-fwdpe="16.39" data-medianpe="15.24" data-payout="1.923943661971831"
+            data-exdiv="2026-10-15" data-buy="0"
+            data-yieldcolor="0" data-pecolor="1" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">ABBV</div>
+            <div class="sector">헬스케어</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.58%</td>
+          <td class="num" data-label="5년 최저 배당률">2.61%</td>
+          <td class="num" data-label="5년 평균 배당률">3.49%</td>
+          <td class="num" data-label="5년 최고 배당률">4.54%</td>
+          <td class="num" data-label="Forward P/E">16.4</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">9.3 / 15.2 / 24.5</td>
+          <td class="num" data-label="배당성향">192.39%</td>
+          <td class="num" data-label="배당락일">2026-10-15</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e5484d" title="배당률 신호: 현재 2.58% · 5년 최저 2.61% / 평균 3.49% / 최고 4.54%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 16.4 · 5년 L/M/H 9.3 / 15.2 / 24.5"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="BLK" data-yield="0.0205" data-minyield="0.01698" data-avgyield="0.02355"
+            data-maxyield="0.03411"
+            data-fwdpe="16.53" data-medianpe="21.12" data-payout="0.5274831243972999"
+            data-exdiv="2026-09-08" data-buy="0"
+            data-yieldcolor="1" data-pecolor="3" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">BLK</div>
+            <div class="sector">금융</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.05%</td>
+          <td class="num" data-label="5년 최저 배당률">1.70%</td>
+          <td class="num" data-label="5년 평균 배당률">2.35%</td>
+          <td class="num" data-label="5년 최고 배당률">3.41%</td>
+          <td class="num" data-label="Forward P/E">16.5</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">14.9 / 21.1 / 24.9</td>
+          <td class="num" data-label="배당성향">52.75%</td>
+          <td class="num" data-label="배당락일">2026-09-08</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.05% · 5년 최저 1.70% / 평균 2.35% / 최고 3.41%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 16.5 · 5년 L/M/H 14.9 / 21.1 / 24.9"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="COST" data-yield="0.006" data-minyield="0.0035" data-avgyield="0.01025"
+            data-maxyield="0.02872"
+            data-fwdpe="40.32" data-medianpe="46.73" data-payout="0.278391959798995"
+            data-exdiv="2026-07-24" data-buy="0"
+            data-yieldcolor="1" data-pecolor="3" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">COST</div>
+            <div class="sector">필수재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">0.60%</td>
+          <td class="num" data-label="5년 최저 배당률">0.35%</td>
+          <td class="num" data-label="5년 평균 배당률">1.03%</td>
+          <td class="num" data-label="5년 최고 배당률">2.87%</td>
+          <td class="num" data-label="Forward P/E">40.3</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">34.5 / 46.7 / 61.2</td>
+          <td class="num" data-label="배당성향">27.84%</td>
+          <td class="num" data-label="배당락일">2026-07-24</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 0.60% · 5년 최저 0.35% / 평균 1.03% / 최고 2.87%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 40.3 · 5년 L/M/H 34.5 / 46.7 / 61.2"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="CVX" data-yield="0.0339" data-minyield="0.03096" data-avgyield="0.03924"
+            data-maxyield="0.04887"
+            data-fwdpe="15.2" data-medianpe="14.28" data-payout="0.670509125840538"
+            data-exdiv="2026-08-19" data-buy="0"
+            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">CVX</div>
+            <div class="sector">에너지</div>
+          </td>
+          <td class="num" data-label="현재 배당률">3.39%</td>
+          <td class="num" data-label="5년 최저 배당률">3.10%</td>
+          <td class="num" data-label="5년 평균 배당률">3.92%</td>
+          <td class="num" data-label="5년 최고 배당률">4.89%</td>
+          <td class="num" data-label="Forward P/E">15.2</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">7.9 / 14.3 / 31.6</td>
+          <td class="num" data-label="배당성향">67.05%</td>
+          <td class="num" data-label="배당락일">2026-08-19</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 3.39% · 5년 최저 3.10% / 평균 3.92% / 최고 4.89%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 15.2 · 5년 L/M/H 7.9 / 14.3 / 31.6"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="HD" data-yield="0.0158" data-minyield="0.0159" data-avgyield="0.02432"
+            data-maxyield="0.03486"
+            data-fwdpe="19.76" data-medianpe="22.51" data-payout="0.3237762237762237"
+            data-exdiv="2026-09-03" data-buy="0"
+            data-yieldcolor="0" data-pecolor="2" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">HD</div>
+            <div class="sector">소비재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">1.58%</td>
+          <td class="num" data-label="5년 최저 배당률">1.59%</td>
+          <td class="num" data-label="5년 평균 배당률">2.43%</td>
+          <td class="num" data-label="5년 최고 배당률">3.49%</td>
+          <td class="num" data-label="Forward P/E">19.8</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">17.0 / 22.5 / 29.1</td>
+          <td class="num" data-label="배당성향">32.38%</td>
+          <td class="num" data-label="배당락일">2026-09-03</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e5484d" title="배당률 신호: 현재 1.58% · 5년 최저 1.59% / 평균 2.43% / 최고 3.49%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1a7f5a" title="P/E 신호: forward 19.8 · 5년 L/M/H 17.0 / 22.5 / 29.1"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="JNJ" data-yield="0.0194" data-minyield="0.01986" data-avgyield="0.02737"
+            data-maxyield="0.03395"
+            data-fwdpe="21.01" data-medianpe="16.4" data-payout="0.6085946573751453"
+            data-exdiv="2026-08-25" data-buy="0"
+            data-yieldcolor="0" data-pecolor="0" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">JNJ</div>
+            <div class="sector">헬스케어</div>
+          </td>
+          <td class="num" data-label="현재 배당률">1.94%</td>
+          <td class="num" data-label="5년 최저 배당률">1.99%</td>
+          <td class="num" data-label="5년 평균 배당률">2.74%</td>
+          <td class="num" data-label="5년 최고 배당률">3.40%</td>
+          <td class="num" data-label="Forward P/E">21.0</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">13.8 / 16.4 / 24.5</td>
+          <td class="num" data-label="배당성향">60.86%</td>
+          <td class="num" data-label="배당락일">2026-08-25</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e5484d" title="배당률 신호: 현재 1.94% · 5년 최저 1.99% / 평균 2.74% / 최고 3.40%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e5484d" title="P/E 신호: forward 21.0 · 5년 L/M/H 13.8 / 16.4 / 24.5"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="JPM" data-yield="0.0177" data-minyield="0.0168" data-avgyield="0.0235"
+            data-maxyield="0.03828"
+            data-fwdpe="13.5" data-medianpe="11.8" data-payout="0.2571795970852979"
+            data-exdiv="2026-10-06" data-buy="0"
+            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">JPM</div>
+            <div class="sector">금융</div>
+          </td>
+          <td class="num" data-label="현재 배당률">1.77%</td>
+          <td class="num" data-label="5년 최저 배당률">1.68%</td>
+          <td class="num" data-label="5년 평균 배당률">2.35%</td>
+          <td class="num" data-label="5년 최고 배당률">3.83%</td>
+          <td class="num" data-label="Forward P/E">13.5</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">8.3 / 11.8 / 16.4</td>
+          <td class="num" data-label="배당성향">25.72%</td>
+          <td class="num" data-label="배당락일">2026-10-06</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 1.77% · 5년 최저 1.68% / 평균 2.35% / 최고 3.83%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 13.5 · 5년 L/M/H 8.3 / 11.8 / 16.4"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="KO" data-yield="0.0235" data-minyield="0.02346" data-avgyield="0.02847"
+            data-maxyield="0.03251"
+            data-fwdpe="25.32" data-medianpe="24.26" data-payout="0.6246246246246246"
+            data-exdiv="2026-09-15" data-buy="0"
+            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">KO</div>
+            <div class="sector">필수재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.35%</td>
+          <td class="num" data-label="5년 최저 배당률">2.35%</td>
+          <td class="num" data-label="5년 평균 배당률">2.85%</td>
+          <td class="num" data-label="5년 최고 배당률">3.25%</td>
+          <td class="num" data-label="Forward P/E">25.3</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">21.3 / 24.3 / 27.4</td>
+          <td class="num" data-label="배당성향">62.46%</td>
+          <td class="num" data-label="배당락일">2026-09-15</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.35% · 5년 최저 2.35% / 평균 2.85% / 최고 3.25%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 25.3 · 5년 L/M/H 21.3 / 24.3 / 27.4"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="MMM" data-yield="0.018" data-minyield="0.01697" data-avgyield="0.06559"
+            data-maxyield="0.24244"
+            data-fwdpe="17.83" data-medianpe="14.81" data-payout="0.5364120781527532"
+            data-exdiv="2026-08-24" data-buy="0"
+            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">MMM</div>
+            <div class="sector">산업재</div>
+          </td>
+          <td class="num" data-label="현재 배당률">1.80%</td>
+          <td class="num" data-label="5년 최저 배당률">1.70%</td>
+          <td class="num" data-label="5년 평균 배당률">6.56%</td>
+          <td class="num" data-label="5년 최고 배당률">24.24%</td>
+          <td class="num" data-label="Forward P/E">17.8</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">9.9 / 14.8 / 21.8</td>
+          <td class="num" data-label="배당성향">53.64%</td>
+          <td class="num" data-label="배당락일">2026-08-24</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 1.80% · 5년 최저 1.70% / 평균 6.56% / 최고 24.24%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 17.8 · 5년 L/M/H 9.9 / 14.8 / 21.8"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+        <tr class=""
+            data-symbol="XOM" data-yield="0.0257" data-minyield="0.02381" data-avgyield="0.03481"
+            data-maxyield="0.05832"
+            data-fwdpe="14.56" data-medianpe="13.55" data-payout="0.5164556962025316"
+            data-exdiv="2026-08-17" data-buy="0"
+            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
+          <td class="col-symbol">
+            <div class="symbol">XOM</div>
+            <div class="sector">에너지</div>
+          </td>
+          <td class="num" data-label="현재 배당률">2.57%</td>
+          <td class="num" data-label="5년 최저 배당률">2.38%</td>
+          <td class="num" data-label="5년 평균 배당률">3.48%</td>
+          <td class="num" data-label="5년 최고 배당률">5.83%</td>
+          <td class="num" data-label="Forward P/E">14.6</td>
+          <td class="num" data-label="5Y P/E (L/M/H)">6.9 / 13.6 / 26.6</td>
+          <td class="num" data-label="배당성향">51.65%</td>
+          <td class="num" data-label="배당락일">2026-08-17</td>
+          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.57% · 5년 최저 2.38% / 평균 3.48% / 최고 5.83%"></span></td>
+          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 14.6 · 5년 L/M/H 6.9 / 13.6 / 26.6"></span></td>
+          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer>데이터 출처: Alpha Vantage · 5년 P/E 밴드는 trailing P/E(월간 종가 ÷ 직전 4분기 EPS)로 자체 계산 · 원(●)에 마우스를 올리면 상세 수치가 표시됩니다 · 열 제목을 클릭하면 정렬됩니다</footer>
+  </div>
+
+  <script>
+    (function() {
+      var table = document.getElementById('dashboard-table');
+      var tbody = table.querySelector('tbody');
+      var ths = table.querySelectorAll('th.sortable');
+      var state = { key: null, dir: 1 };
+
+      ths.forEach(function(th) {
+        th.addEventListener('click', function() {
+          var key = th.getAttribute('data-key');
+          var type = th.getAttribute('data-type');
+          if (state.key === key) {
+            state.dir *= -1;
+          } else {
+            state.key = key;
+            state.dir = 1;
+          }
+          ths.forEach(function(t) {
+            t.classList.remove('sorted');
+            t.querySelector('.arrow').textContent = '↕';
+          });
+          th.classList.add('sorted');
+          th.querySelector('.arrow').textContent = state.dir === 1 ? '▲' : '▼';
+
+          var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+          rows.sort(function(a, b) {
+            var av = a.getAttribute('data-' + key);
+            var bv = b.getAttribute('data-' + key);
+            var cmp;
+            if (type === 'color') {
+              // 색상 등급: 파랑=3 > 초록=2 > 노랑=1 > 빨강=0, 회색(-1)은 방향과 무관하게 항상 맨 아래
+              var an = parseFloat(av), bn = parseFloat(bv);
+              if (an === -1 && bn === -1) { cmp = 0; }
+              else if (an === -1) { cmp = 1; }
+              else if (bn === -1) { cmp = -1; }
+              else { cmp = (an - bn) * state.dir; }
+            } else if (type === 'num') {
+              cmp = parseFloat(av) - parseFloat(bv);
+            } else {
+              cmp = av.localeCompare(bv);
+            }
+            if (type !== 'color') { cmp = cmp * state.dir; }
+            return cmp;
+          });
+          rows.forEach(function(r) { tbody.appendChild(r); });
+        });
+      });
+    })();
+  </script>
+  <script>
+    // 홈 화면 설치(PWA)를 위한 최소 서비스워커 등록. 실패해도 페이지 동작에는 영향 없음.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('service-worker.js').catch(function() {});
+      });
+    }
+  </script>
+</body>
+</html>
+
