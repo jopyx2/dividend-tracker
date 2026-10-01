@@ -100,7 +100,7 @@
 
   <section id="view-home">
     <h1>미국 배당주 적정주가 추적기</h1>
-    <div class="subtitle" id="updated-line" data-updated="2026-10-01T21:27:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 06:27 KST</b> · 대상 19종목</div>
+    <div class="subtitle" id="updated-line" data-updated="2026-10-01T21:28:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 06:28 KST</b> · 대상 19종목</div>
     <div id="stale-warning" hidden></div>
 
     <div class="rank-cards">
@@ -144,7 +144,7 @@
     <div class="topbar"><button class="back" id="list-back" aria-label="뒤로">‹</button><div class="title" id="list-title"></div></div>
     <div class="list" id="list-box">
       <div class="lhead" id="lhead">
-        <button data-key="name">종목명</button><button class="r" data-key="yield">배당률</button><button class="r" data-key="pe">P/E</button><button class="c" data-key="overall">종합</button>
+        <button data-key="name">Ticker</button><button class="r" data-key="yield">배당률</button><button class="r" data-key="pe">P/E</button><button class="c" data-key="overall">종합</button>
       </div>
       <div id="list-rows"></div>
     </div>
@@ -213,7 +213,7 @@
     $('list-rows').innerHTML = arr.map(function (s) {
       var d = D[s];
       return '<a class="row" href="#/stock/' + encodeURIComponent(s) + '">' +
-        '<div class="c-name"><b>' + esc(s) + '</b><small>' + esc(d.sector || '') + '</small></div>' +
+        '<div class="c-name"><b>' + esc(s) + '</b></div>' +
         '<div class="c-num' + (good(d.yield_color) ? ' bold' : '') + '">' + pct(d.cur_yield) + '</div>' +
         '<div class="c-num' + (good(d.pe_color) ? ' bold' : '') + '">' + num(d.fwd_pe) + '</div>' +
         '<div class="c-dot">' + dot(d.overall) + '</div></a>';
