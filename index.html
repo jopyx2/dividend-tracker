@@ -97,7 +97,8 @@
 <body>
   <div class="wrap">
     <h1>미국 배당주 적정주가 추적기</h1>
-    <div class="subtitle">업데이트: 2026-10-01 19:58 UTC · 대상 19종목</div>
+    <div class="subtitle" id="updated-line" data-updated="2026-10-01T19:58:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 04:58 KST</b> · 대상 19종목</div>
+    <div id="stale-warning" hidden style="background:#fdecec;color:#b42318;border:1px solid #f3c1bd;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px"></div>
 
     <div class="stats">
       <div class="stat-tile strong">
@@ -622,6 +623,26 @@
           rows.forEach(function(r) { tbody.appendChild(r); });
         });
       });
+    })();
+  </script>
+  <script>
+    // 최종 업데이트 시각을 KST로 표시하고, 3일 넘게 갱신이 없으면 경고를 띄움.
+    (function() {
+      var el = document.getElementById('updated-line');
+      if (!el) return;
+      var t = new Date(el.getAttribute('data-updated'));
+      if (isNaN(t)) return;
+      var k = new Date(t.getTime() + 9 * 3600 * 1000);
+      var p = function(n) { return String(n).padStart(2, '0'); };
+      document.getElementById('updated-kst').textContent =
+        k.getUTCFullYear() + '-' + p(k.getUTCMonth() + 1) + '-' + p(k.getUTCDate()) + ' ' +
+        p(k.getUTCHours()) + ':' + p(k.getUTCMinutes()) + ' KST';
+      var days = (Date.now() - t.getTime()) / 86400000;
+      if (days > 3) {
+        var w = document.getElementById('stale-warning');
+        w.textContent = '⚠ 데이터가 ' + Math.floor(days) + '일째 갱신되지 않았습니다. 예약작업 상태를 확인하세요.';
+        w.hidden = false;
+      }
     })();
   </script>
   <script>
