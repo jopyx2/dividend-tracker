@@ -14,82 +14,69 @@
 <meta name="apple-mobile-web-app-title" content="배당추적기">
 <style>
   :root {
-    --ink-primary: #1c2128;
-    --ink-secondary: #4b5563;
-    --ink-muted: #8a94a3;
-    --surface: #ffffff;
-    --surface-alt: #f7f8fa;
-    --border: #e4e7ec;
-    --accent: #2f6fed;
-    --good: #1a7f5a;
-    --good-bg: #e6f4ef;
-    --strong: #1d4ed8;
-    --strong-bg: #e8edfc;
-    --neutral: #5b6472;
-    --neutral-bg: #eef0f2;
+    --ink-primary: #1c2128; --ink-secondary: #4b5563; --ink-muted: #8a94a3;
+    --surface: #ffffff; --surface-alt: #f7f8fa; --border: #e4e7ec; --accent: #2f6fed;
+    --good: #1a7f5a; --good-bg: #e6f4ef; --strong: #1d4ed8; --strong-bg: #e8edfc;
+    --neutral: #5b6472; --neutral-bg: #eef0f2;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
-    margin: 0;
-    padding: 32px 16px 64px;
-    background: var(--surface-alt);
-    color: var(--ink-primary);
+    margin: 0; background: var(--surface-alt); color: var(--ink-primary);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    -webkit-tap-highlight-color: transparent;
   }
-  .wrap { max-width: 1180px; margin: 0 auto; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
-  .subtitle { color: var(--ink-muted); font-size: 13px; margin-bottom: 24px; }
-  .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-  .stat-tile {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 20px; min-width: 140px;
-  }
-  .stat-tile .label { font-size: 12px; color: var(--ink-muted); margin-bottom: 4px; }
-  .stat-tile .value { font-size: 24px; font-weight: 600; }
-  .stat-tile.good .value { color: var(--good); }
-  .stat-tile.strong .value { color: var(--strong); }
-  .criteria {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 18px; margin-bottom: 24px; font-size: 13px; color: var(--ink-secondary); line-height: 1.9;
-  }
-  .criteria b { color: var(--ink-primary); }
-  .legend-dot {
-    display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px 0 10px; vertical-align: middle;
-  }
-  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-  thead th {
-    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em;
-    color: var(--ink-muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--border);
-    background: var(--surface-alt);
-  }
-  td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--ink-secondary); }
-  tr:last-child td { border-bottom: none; }
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .center { text-align: center; }
-  th.num { text-align: right; }
-  th.center { text-align: center; }
-  .col-symbol { position: relative; }
-  .col-symbol .symbol { font-weight: 700; color: var(--ink-primary); font-size: 14px; }
-  .col-symbol .sector { font-size: 11px; color: var(--ink-muted); }
-  
-  .stat-tile { cursor: pointer; text-align: left; font: inherit; color: inherit; transition: box-shadow .12s, border-color .12s; }
-  .stat-tile:hover { border-color: #c3cad5; }
-  .stat-tile.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(47,111,237,.18); }
-  .stat-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .is-hidden { display: none !important; }
-  #empty-msg { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 28px; text-align: center; color: var(--ink-muted); font-size: 13px; }
-  tbody tr { cursor: pointer; }
-  tbody tr:hover { background: var(--surface-alt); }
-  td.b, td.bold { font-weight: 700; color: var(--ink-primary); }
-  .col-symbol .symbol { font-weight: 700; }
-  .hint { color: var(--ink-muted); font-size: 12px; margin: -12px 0 12px; }
-  .modal { position: fixed; inset: 0; background: rgba(20,24,32,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
-  .modal[hidden] { display: none; }
-  .modal-panel { background: var(--surface); width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto; border-radius: 16px 16px 0 0; padding: 20px 20px 28px; position: relative; }
-  @media (min-width: 721px) { .modal { align-items: center; } .modal-panel { border-radius: 16px; } }
-  .modal-close { position: absolute; top: 10px; right: 12px; border: none; background: transparent; font-size: 24px; line-height: 1; cursor: pointer; color: var(--ink-muted); padding: 6px 10px; }
-  .m-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; padding-right: 36px; }
-  .m-head .sym { font-size: 22px; font-weight: 700; }
+  .app { max-width: 720px; margin: 0 auto; padding: 24px 16px 56px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .subtitle { color: var(--ink-muted); font-size: 13px; margin-bottom: 18px; }
+  #stale-warning { background: #fdecec; color: #b42318; border: 1px solid #f3c1bd; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; }
+
+  .rank-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .rank-card { display: block; position: relative; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 36px 16px 16px; }
+  .rank-card:active { background: var(--surface-alt); }
+  .rank-card.all { grid-column: 1 / -1; }
+  .rank-card .label { font-size: 14px; font-weight: 600; }
+  .rank-card .value { font-size: 30px; font-weight: 700; margin-top: 6px; }
+  .rank-card.r1 .value { color: var(--strong); }
+  .rank-card.r2 .value { color: var(--good); }
+  .rank-card .chev { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-muted); font-size: 24px; }
+
+  details.criteria { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 16px; }
+  details.criteria summary { list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+  details.criteria summary::-webkit-details-marker { display: none; }
+  details.criteria summary::after { content: "▾"; color: var(--ink-muted); }
+  details.criteria[open] summary::after { content: "▴"; }
+  .criteria-body { padding: 0 16px 14px; font-size: 13px; color: var(--ink-secondary); line-height: 1.9; }
+  .criteria-body b { color: var(--ink-primary); }
+  .criteria-body p { margin: 0 0 8px; }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px 0 10px; vertical-align: middle; }
+  footer { margin-top: 20px; font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
+
+  .topbar { position: sticky; top: 0; z-index: 5; background: var(--surface-alt); display: flex; align-items: center; gap: 10px; padding: 8px 0 12px; }
+  .back { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; width: 40px; height: 40px; font-size: 20px; line-height: 1; cursor: pointer; color: var(--ink-primary); }
+  .topbar .title { font-size: 17px; font-weight: 700; }
+
+  .list { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .lhead, .row { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr 0.7fr; align-items: center; gap: 6px; padding: 12px 14px; }
+  .lhead { font-size: 11px; color: var(--ink-muted); font-weight: 600; background: var(--surface-alt); border-bottom: 1px solid var(--border); }
+  .lhead button { all: unset; cursor: pointer; white-space: nowrap; }
+  .lhead button.r { text-align: right; }
+  .lhead button.c { text-align: center; }
+  .lhead button.on { color: var(--accent); }
+  .row { text-decoration: none; color: var(--ink-secondary); border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row:active { background: var(--surface-alt); }
+  .c-name b { display: block; font-size: 15px; color: var(--ink-primary); }
+  .c-name small { font-size: 11px; color: var(--ink-muted); }
+  .c-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .c-dot { text-align: center; }
+  .bold { font-weight: 700; color: var(--ink-primary); }
+  .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.08); vertical-align: middle; }
+  .empty { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; text-align: center; color: var(--ink-muted); font-size: 13px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 22px; }
+  .m-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .m-head .sym { font-size: 24px; font-weight: 700; }
   .m-sub { color: var(--ink-muted); font-size: 12px; margin-bottom: 14px; }
   .m-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--neutral-bg); color: var(--neutral); }
   .m-badge.green { background: var(--good-bg); color: var(--good); }
@@ -106,584 +93,149 @@
   .rng-cur { position: absolute; top: -4px; width: 4px; height: 18px; background: var(--ink-primary); border-radius: 2px; transform: translateX(-2px); }
   .rng-l { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
   .muted { color: var(--ink-muted); font-size: 12px; }
-
-  .dot {
-    display: inline-block; width: 14px; height: 14px; border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.08);
-  }
-  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
-  th.sortable:hover { color: var(--ink-secondary); }
-  th.sortable .arrow { display: inline-block; width: 10px; opacity: 0.35; font-size: 10px; }
-  th.sortable.sorted .arrow { opacity: 1; color: var(--accent); }
-  footer { margin-top: 20px; font-size: 12px; color: var(--ink-muted); }
-  @media (max-width: 720px) {
-    table, thead, tbody, tr { display: block; }
-    thead { display: none; }
-    tr { border-bottom: 8px solid var(--surface-alt); padding: 8px 0; }
-    td { display: flex; justify-content: space-between; border-bottom: none; padding: 6px 14px; }
-    td.num, td.center { text-align: right; }
-    td::before { content: attr(data-label); color: var(--ink-muted); font-size: 11px; }
-  }
 </style>
 </head>
 <body>
-  <div class="wrap">
+<div class="app">
+
+  <section id="view-home">
     <h1>미국 배당주 적정주가 추적기</h1>
-    <div class="subtitle" id="updated-line" data-updated="2026-10-01T21:14:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 06:14 KST</b> · 대상 19종목</div>
-    <div id="stale-warning" hidden style="background:#fdecec;color:#b42318;border:1px solid #f3c1bd;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px"></div>
+    <div class="subtitle" id="updated-line" data-updated="2026-10-01T21:27:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 06:27 KST</b> · 대상 19종목</div>
+    <div id="stale-warning" hidden></div>
 
-    <div class="stats">
-      <button type="button" class="stat-tile strong" data-filter="blue" aria-pressed="false">
-        <div class="label">종합 파랑(강한 신호)</div>
-        <div class="value">1</div>
-      </button>
-      <button type="button" class="stat-tile good" data-filter="green" aria-pressed="false">
-        <div class="label">종합 초록(신호 충족)</div>
-        <div class="value">8</div>
-      </button>
-      <button type="button" class="stat-tile" data-filter="all" aria-pressed="true">
-        <div class="label">전체 추적 종목</div>
-        <div class="value">19</div>
-      </button>
-    </div>
-    <div class="hint">위 카드를 누르면 해당 종목만 보이고, 종목을 누르면 상세 내용이 열립니다.</div>
-
-    <div class="criteria">
-      <b>배당률 신호</b> — 현재 배당수익률을 자체 5년 최저/평균/최고와 비교(높을수록 좋음):
-      <span class="legend-dot" style="background:#e5484d"></span>최저 이하
-      <span class="legend-dot" style="background:#e6a700"></span>최저~평균
-      <span class="legend-dot" style="background:#1a7f5a"></span>평균~최고
-      <span class="legend-dot" style="background:#1d4ed8"></span>최고 초과<br>
-      <b>P/E 신호</b> — forward P/E를 자체 5년 Low/Median/High 기준 구간과 비교(낮을수록 좋음):
-      <span class="legend-dot" style="background:#1d4ed8"></span>(Low+Median)/2 이하
-      <span class="legend-dot" style="background:#1a7f5a"></span>~Median
-      <span class="legend-dot" style="background:#e6a700"></span>~(Median+High)/2
-      <span class="legend-dot" style="background:#e5484d"></span>(Median+High)/2 초과<br>
-      <b>종합</b> — 배당률·P/E 신호가 <b>둘 다 초록 또는 파랑</b>일 때 충족(둘 다 파랑이면 종합도 파랑, 그 외 충족이면 초록, 미충족은 회색):
-      <span class="legend-dot" style="background:#1a7f5a"></span>충족
-      <span class="legend-dot" style="background:#1d4ed8"></span>강한 충족
-      <span class="legend-dot" style="background:#c7ccd4"></span>미충족/데이터 부족<br>
-      <span style="color:var(--ink-muted)">원 헤더 클릭 시 내림차순은 파랑→빨강, 오름차순은 빨강→파랑 순이며 회색(데이터 없음)은 항상 맨 아래로 정렬됩니다.</span>
+    <div class="rank-cards">
+      <a class="rank-card r1" href="#/list/blue"><div class="label">1순위</div><div class="value">1</div><span class="chev">›</span></a>
+      <a class="rank-card r2" href="#/list/green"><div class="label">2순위</div><div class="value">8</div><span class="chev">›</span></a>
+      <a class="rank-card all" href="#/list/all"><div class="label">전체 List</div><div class="value">19</div><span class="chev">›</span></a>
     </div>
 
-    <div id="empty-msg" hidden>해당하는 종목이 없습니다.</div>
-    <table id="dashboard-table">
-      <thead>
-        <tr>
-          <th class="sortable" data-key="symbol" data-type="str">종목 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="price" data-type="num">현재가 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="yield" data-type="num">현재 배당률 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="minyield" data-type="num">5년 최저 배당률 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="avgyield" data-type="num">5년 평균 배당률 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="maxyield" data-type="num">5년 최고 배당률 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="fwdpe" data-type="num">Forward P/E <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="medianpe" data-type="num">5Y P/E (L/M/H) <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="payout" data-type="num">배당성향 <span class="arrow">↕</span></th>
-          <th class="num sortable" data-key="exdiv" data-type="str">배당락일 <span class="arrow">↕</span></th>
-          <th class="center sortable" data-key="yieldcolor" data-type="color">배당률 신호 <span class="arrow">↕</span></th>
-          <th class="center sortable" data-key="pecolor" data-type="color">P/E 신호 <span class="arrow">↕</span></th>
-          <th class="center sortable" data-key="overallcolor" data-type="color">종합 <span class="arrow">↕</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        
-        <tr class=""
-            data-symbol="LOW" data-price="182.37" tabindex="0" data-yield="0.0265942863409552" data-minyield="0.01083" data-avgyield="0.01864"
-            data-maxyield="0.0259"
-            data-fwdpe="15.77" data-medianpe="18.05" data-payout="0.4202772963604853"
-            data-exdiv="2026-10-21" data-buy="2"
-            data-yieldcolor="3" data-pecolor="3" data-overallcolor="3">
-          <td class="col-symbol">
-            <div class="symbol">LOW</div>
-            <div class="sector">소비재</div>
-          </td>
-          <td class="num" data-label="현재가">$182.37</td>
-          <td class="num b" data-label="현재 배당률">2.66%</td>
-          <td class="num" data-label="5년 최저 배당률">1.08%</td>
-          <td class="num" data-label="5년 평균 배당률">1.86%</td>
-          <td class="num" data-label="5년 최고 배당률">2.59%</td>
-          <td class="num b" data-label="Forward P/E">15.8</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">14.0 / 18.1 / 23.1</td>
-          <td class="num" data-label="배당성향">42.03%</td>
-          <td class="num exdiv" data-label="배당락일">2026-10-21</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1d4ed8" title="배당률 신호: 현재 2.66% · 5년 최저 1.08% / 평균 1.86% / 최고 2.59%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 15.8 · 5년 L/M/H 14.0 / 18.1 / 23.1"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1d4ed8" title="종합: 강한 신호(둘 다 파랑)"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="LMT" data-price="505.54" tabindex="0" data-yield="0.027000830794793686" data-minyield="0.01663" data-avgyield="0.02569"
-            data-maxyield="0.0318"
-            data-fwdpe="16.16" data-medianpe="19.04" data-payout="0.5031330630298563"
-            data-exdiv="2026-09-01" data-buy="1"
-            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">LMT</div>
-            <div class="sector">산업재</div>
-          </td>
-          <td class="num" data-label="현재가">$505.54</td>
-          <td class="num b" data-label="현재 배당률">2.70%</td>
-          <td class="num" data-label="5년 최저 배당률">1.66%</td>
-          <td class="num" data-label="5년 평균 배당률">2.57%</td>
-          <td class="num" data-label="5년 최고 배당률">3.18%</td>
-          <td class="num b" data-label="Forward P/E">16.2</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">14.4 / 19.0 / 30.6</td>
-          <td class="num" data-label="배당성향">50.31%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-01</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.70% · 5년 최저 1.66% / 평균 2.57% / 최고 3.18%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 16.2 · 5년 L/M/H 14.4 / 19.0 / 30.6"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="NEE" data-price="76.35" tabindex="0" data-yield="0.031159135559921416" data-minyield="0.0165" data-avgyield="0.02592"
-            data-maxyield="0.03788"
-            data-fwdpe="17.73" data-medianpe="23.25" data-payout="0.5346067415730337"
-            data-exdiv="2026-08-28" data-buy="1"
-            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">NEE</div>
-            <div class="sector">유틸리티</div>
-          </td>
-          <td class="num" data-label="현재가">$76.35</td>
-          <td class="num b" data-label="현재 배당률">3.12%</td>
-          <td class="num" data-label="5년 최저 배당률">1.65%</td>
-          <td class="num" data-label="5년 평균 배당률">2.59%</td>
-          <td class="num" data-label="5년 최고 배당률">3.79%</td>
-          <td class="num b" data-label="Forward P/E">17.7</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">17.4 / 23.2 / 36.8</td>
-          <td class="num" data-label="배당성향">53.46%</td>
-          <td class="num exdiv" data-label="배당락일">2026-08-28</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 3.12% · 5년 최저 1.65% / 평균 2.59% / 최고 3.79%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 17.7 · 5년 L/M/H 17.4 / 23.2 / 36.8"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="O" data-price="53.53" tabindex="0" data-yield="0.060433401830749106" data-minyield="0.03947" data-avgyield="0.05173"
-            data-maxyield="0.06574"
-            data-fwdpe="33.67" data-medianpe="50.72" data-payout="2.3613138686131383"
-            data-exdiv="2026-09-30" data-buy="1"
-            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">O</div>
-            <div class="sector">리츠</div>
-          </td>
-          <td class="num" data-label="현재가">$53.53</td>
-          <td class="num b" data-label="현재 배당률">6.04%</td>
-          <td class="num" data-label="5년 최저 배당률">3.95%</td>
-          <td class="num" data-label="5년 평균 배당률">5.17%</td>
-          <td class="num" data-label="5년 최고 배당률">6.57%</td>
-          <td class="num b" data-label="Forward P/E">33.7</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">26.2 / 50.7 / 70.2</td>
-          <td class="num" data-label="배당성향">236.13%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-30</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 6.04% · 5년 최저 3.95% / 평균 5.17% / 최고 6.57%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 33.7 · 5년 L/M/H 26.2 / 50.7 / 70.2"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="PEP" data-price="125.62" tabindex="0" data-yield="0.04577296608820251" data-minyield="0.02195" data-avgyield="0.03119"
-            data-maxyield="0.04581"
-            data-fwdpe="14.86" data-medianpe="21.97" data-payout="0.7545931758530183"
-            data-exdiv="2026-09-04" data-buy="1"
-            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">PEP</div>
-            <div class="sector">필수재</div>
-          </td>
-          <td class="num" data-label="현재가">$125.62</td>
-          <td class="num b" data-label="현재 배당률">4.58%</td>
-          <td class="num" data-label="5년 최저 배당률">2.20%</td>
-          <td class="num" data-label="5년 평균 배당률">3.12%</td>
-          <td class="num" data-label="5년 최고 배당률">4.58%</td>
-          <td class="num b" data-label="Forward P/E">14.9</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">15.2 / 22.0 / 27.9</td>
-          <td class="num" data-label="배당성향">75.46%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-04</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 4.58% · 5년 최저 2.20% / 평균 3.12% / 최고 4.58%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 14.9 · 5년 L/M/H 15.2 / 22.0 / 27.9"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="PG" data-price="143.99" tabindex="0" data-yield="0.029578442947426904" data-minyield="0.02079" data-avgyield="0.02513"
-            data-maxyield="0.02969"
-            data-fwdpe="21.23" data-medianpe="24.77" data-payout="0.6512232415902142"
-            data-exdiv="2026-07-24" data-buy="1"
-            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">PG</div>
-            <div class="sector">필수재</div>
-          </td>
-          <td class="num" data-label="현재가">$143.99</td>
-          <td class="num b" data-label="현재 배당률">2.96%</td>
-          <td class="num" data-label="5년 최저 배당률">2.08%</td>
-          <td class="num" data-label="5년 평균 배당률">2.51%</td>
-          <td class="num" data-label="5년 최고 배당률">2.97%</td>
-          <td class="num b" data-label="Forward P/E">21.2</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">20.7 / 24.8 / 28.9</td>
-          <td class="num" data-label="배당성향">65.12%</td>
-          <td class="num exdiv" data-label="배당락일">2026-07-24</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.96% · 5년 최저 2.08% / 평균 2.51% / 최고 2.97%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 21.2 · 5년 L/M/H 20.7 / 24.8 / 28.9"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="SBUX" data-price="94.84" tabindex="0" data-yield="0.0261493040911008" data-minyield="0.01573" data-avgyield="0.02353"
-            data-maxyield="0.03017"
-            data-fwdpe="30.86" data-medianpe="30.87" data-payout="1.4335260115606936"
-            data-exdiv="2026-08-14" data-buy="1"
-            data-yieldcolor="2" data-pecolor="2" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">SBUX</div>
-            <div class="sector">소비재</div>
-          </td>
-          <td class="num" data-label="현재가">$94.84</td>
-          <td class="num b" data-label="현재 배당률">2.61%</td>
-          <td class="num" data-label="5년 최저 배당률">1.57%</td>
-          <td class="num" data-label="5년 평균 배당률">2.35%</td>
-          <td class="num" data-label="5년 최고 배당률">3.02%</td>
-          <td class="num b" data-label="Forward P/E">30.9</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">21.4 / 30.9 / 50.6</td>
-          <td class="num" data-label="배당성향">143.35%</td>
-          <td class="num exdiv" data-label="배당락일">2026-08-14</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.61% · 5년 최저 1.57% / 평균 2.35% / 최고 3.02%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1a7f5a" title="P/E 신호: forward 30.9 · 5년 L/M/H 21.4 / 30.9 / 50.6"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="UNH" data-price="365.12" tabindex="0" data-yield="0.024512489044697633" data-minyield="0.01106" data-avgyield="0.01716"
-            data-maxyield="0.0341"
-            data-fwdpe="16.58" data-medianpe="21.43" data-payout="0.5781653746770026"
-            data-exdiv="2026-09-14" data-buy="1"
-            data-yieldcolor="2" data-pecolor="2" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">UNH</div>
-            <div class="sector">헬스케어</div>
-          </td>
-          <td class="num" data-label="현재가">$365.12</td>
-          <td class="num b" data-label="현재 배당률">2.45%</td>
-          <td class="num" data-label="5년 최저 배당률">1.11%</td>
-          <td class="num" data-label="5년 평균 배당률">1.72%</td>
-          <td class="num" data-label="5년 최고 배당률">3.41%</td>
-          <td class="num b" data-label="Forward P/E">16.6</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">9.9 / 21.4 / 27.0</td>
-          <td class="num" data-label="배당성향">57.82%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-14</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 2.45% · 5년 최저 1.11% / 평균 1.72% / 최고 3.41%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1a7f5a" title="P/E 신호: forward 16.6 · 5년 L/M/H 9.9 / 21.4 / 27.0"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="WM" data-price="201.93" tabindex="0" data-yield="0.017530827514485217" data-minyield="0.00986" data-avgyield="0.01495"
-            data-maxyield="0.02018"
-            data-fwdpe="22.52" data-medianpe="30.15" data-payout="0.5007072135785007"
-            data-exdiv="2026-09-11" data-buy="1"
-            data-yieldcolor="2" data-pecolor="3" data-overallcolor="2">
-          <td class="col-symbol">
-            <div class="symbol">WM</div>
-            <div class="sector">필수재</div>
-          </td>
-          <td class="num" data-label="현재가">$201.93</td>
-          <td class="num b" data-label="현재 배당률">1.75%</td>
-          <td class="num" data-label="5년 최저 배당률">0.99%</td>
-          <td class="num" data-label="5년 평균 배당률">1.49%</td>
-          <td class="num" data-label="5년 최고 배당률">2.02%</td>
-          <td class="num b" data-label="Forward P/E">22.5</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">26.4 / 30.1 / 34.4</td>
-          <td class="num" data-label="배당성향">50.07%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-11</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#1a7f5a" title="배당률 신호: 현재 1.75% · 5년 최저 0.99% / 평균 1.49% / 최고 2.02%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 22.5 · 5년 L/M/H 26.4 / 30.1 / 34.4"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#1a7f5a" title="종합: 신호 충족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="ABBV" data-price="260.02" tabindex="0" data-yield="0.02626721021459888" data-minyield="0.02609" data-avgyield="0.03487"
-            data-maxyield="0.04535"
-            data-fwdpe="16.39" data-medianpe="15.24" data-payout="1.923943661971831"
-            data-exdiv="2026-10-15" data-buy="0"
-            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">ABBV</div>
-            <div class="sector">헬스케어</div>
-          </td>
-          <td class="num" data-label="현재가">$260.02</td>
-          <td class="num" data-label="현재 배당률">2.63%</td>
-          <td class="num" data-label="5년 최저 배당률">2.61%</td>
-          <td class="num" data-label="5년 평균 배당률">3.49%</td>
-          <td class="num" data-label="5년 최고 배당률">4.54%</td>
-          <td class="num" data-label="Forward P/E">16.4</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">9.3 / 15.2 / 24.5</td>
-          <td class="num" data-label="배당성향">192.39%</td>
-          <td class="num exdiv" data-label="배당락일">2026-10-15</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.63% · 5년 최저 2.61% / 평균 3.49% / 최고 4.54%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 16.4 · 5년 L/M/H 9.3 / 15.2 / 24.5"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="BLK" data-price="1064.99" tabindex="0" data-yield="0.020544793847829555" data-minyield="0.01698" data-avgyield="0.02355"
-            data-maxyield="0.03411"
-            data-fwdpe="16.53" data-medianpe="21.12" data-payout="0.5274831243972999"
-            data-exdiv="2026-09-08" data-buy="0"
-            data-yieldcolor="1" data-pecolor="3" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">BLK</div>
-            <div class="sector">금융</div>
-          </td>
-          <td class="num" data-label="현재가">$1,064.99</td>
-          <td class="num" data-label="현재 배당률">2.05%</td>
-          <td class="num" data-label="5년 최저 배당률">1.70%</td>
-          <td class="num" data-label="5년 평균 배당률">2.35%</td>
-          <td class="num" data-label="5년 최고 배당률">3.41%</td>
-          <td class="num b" data-label="Forward P/E">16.5</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">14.9 / 21.1 / 24.9</td>
-          <td class="num" data-label="배당성향">52.75%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-08</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.05% · 5년 최저 1.70% / 평균 2.35% / 최고 3.41%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 16.5 · 5년 L/M/H 14.9 / 21.1 / 24.9"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="COST" data-price="914.99" tabindex="0" data-yield="0.0060547109804478735" data-minyield="0.0035" data-avgyield="0.01025"
-            data-maxyield="0.02872"
-            data-fwdpe="40.32" data-medianpe="46.73" data-payout="0.278391959798995"
-            data-exdiv="2026-07-24" data-buy="0"
-            data-yieldcolor="1" data-pecolor="3" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">COST</div>
-            <div class="sector">필수재</div>
-          </td>
-          <td class="num" data-label="현재가">$914.99</td>
-          <td class="num" data-label="현재 배당률">0.61%</td>
-          <td class="num" data-label="5년 최저 배당률">0.35%</td>
-          <td class="num" data-label="5년 평균 배당률">1.03%</td>
-          <td class="num" data-label="5년 최고 배당률">2.87%</td>
-          <td class="num b" data-label="Forward P/E">40.3</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">34.5 / 46.7 / 61.2</td>
-          <td class="num" data-label="배당성향">27.84%</td>
-          <td class="num exdiv" data-label="배당락일">2026-07-24</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 0.61% · 5년 최저 0.35% / 평균 1.03% / 최고 2.87%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1d4ed8" title="P/E 신호: forward 40.3 · 5년 L/M/H 34.5 / 46.7 / 61.2"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="CVX" data-price="207.19" tabindex="0" data-yield="0.03368888459867755" data-minyield="0.03096" data-avgyield="0.03924"
-            data-maxyield="0.04887"
-            data-fwdpe="15.2" data-medianpe="14.28" data-payout="0.670509125840538"
-            data-exdiv="2026-08-19" data-buy="0"
-            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">CVX</div>
-            <div class="sector">에너지</div>
-          </td>
-          <td class="num" data-label="현재가">$207.19</td>
-          <td class="num" data-label="현재 배당률">3.37%</td>
-          <td class="num" data-label="5년 최저 배당률">3.10%</td>
-          <td class="num" data-label="5년 평균 배당률">3.92%</td>
-          <td class="num" data-label="5년 최고 배당률">4.89%</td>
-          <td class="num" data-label="Forward P/E">15.2</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">7.9 / 14.3 / 31.6</td>
-          <td class="num" data-label="배당성향">67.05%</td>
-          <td class="num exdiv" data-label="배당락일">2026-08-19</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 3.37% · 5년 최저 3.10% / 평균 3.92% / 최고 4.89%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 15.2 · 5년 L/M/H 7.9 / 14.3 / 31.6"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="HD" data-price="282.5" tabindex="0" data-yield="0.01638938053097345" data-minyield="0.0159" data-avgyield="0.02432"
-            data-maxyield="0.03486"
-            data-fwdpe="19.76" data-medianpe="22.51" data-payout="0.3237762237762237"
-            data-exdiv="2026-09-03" data-buy="0"
-            data-yieldcolor="1" data-pecolor="2" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">HD</div>
-            <div class="sector">소비재</div>
-          </td>
-          <td class="num" data-label="현재가">$282.50</td>
-          <td class="num" data-label="현재 배당률">1.64%</td>
-          <td class="num" data-label="5년 최저 배당률">1.59%</td>
-          <td class="num" data-label="5년 평균 배당률">2.43%</td>
-          <td class="num" data-label="5년 최고 배당률">3.49%</td>
-          <td class="num b" data-label="Forward P/E">19.8</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">17.0 / 22.5 / 29.1</td>
-          <td class="num" data-label="배당성향">32.38%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-03</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 1.64% · 5년 최저 1.59% / 평균 2.43% / 최고 3.49%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#1a7f5a" title="P/E 신호: forward 19.8 · 5년 L/M/H 17.0 / 22.5 / 29.1"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="JNJ" data-price="258.74" tabindex="0" data-yield="0.020251990415088506" data-minyield="0.01986" data-avgyield="0.02737"
-            data-maxyield="0.03395"
-            data-fwdpe="21.01" data-medianpe="16.4" data-payout="0.6085946573751453"
-            data-exdiv="2026-08-25" data-buy="0"
-            data-yieldcolor="1" data-pecolor="0" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">JNJ</div>
-            <div class="sector">헬스케어</div>
-          </td>
-          <td class="num" data-label="현재가">$258.74</td>
-          <td class="num" data-label="현재 배당률">2.03%</td>
-          <td class="num" data-label="5년 최저 배당률">1.99%</td>
-          <td class="num" data-label="5년 평균 배당률">2.74%</td>
-          <td class="num" data-label="5년 최고 배당률">3.40%</td>
-          <td class="num" data-label="Forward P/E">21.0</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">13.8 / 16.4 / 24.5</td>
-          <td class="num" data-label="배당성향">60.86%</td>
-          <td class="num exdiv" data-label="배당락일">2026-08-25</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.03% · 5년 최저 1.99% / 평균 2.74% / 최고 3.40%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e5484d" title="P/E 신호: forward 21.0 · 5년 L/M/H 13.8 / 16.4 / 24.5"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="JPM" data-price="333.33" tabindex="0" data-yield="0.01800018000180002" data-minyield="0.0168" data-avgyield="0.0235"
-            data-maxyield="0.03828"
-            data-fwdpe="13.5" data-medianpe="11.8" data-payout="0.2571795970852979"
-            data-exdiv="2026-10-06" data-buy="0"
-            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">JPM</div>
-            <div class="sector">금융</div>
-          </td>
-          <td class="num" data-label="현재가">$333.33</td>
-          <td class="num" data-label="현재 배당률">1.80%</td>
-          <td class="num" data-label="5년 최저 배당률">1.68%</td>
-          <td class="num" data-label="5년 평균 배당률">2.35%</td>
-          <td class="num" data-label="5년 최고 배당률">3.83%</td>
-          <td class="num" data-label="Forward P/E">13.5</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">8.3 / 11.8 / 16.4</td>
-          <td class="num" data-label="배당성향">25.72%</td>
-          <td class="num exdiv" data-label="배당락일">2026-10-06</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 1.80% · 5년 최저 1.68% / 평균 2.35% / 최고 3.83%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 13.5 · 5년 L/M/H 8.3 / 11.8 / 16.4"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="KO" data-price="86.12" tabindex="0" data-yield="0.024152345564328843" data-minyield="0.02346" data-avgyield="0.02847"
-            data-maxyield="0.03251"
-            data-fwdpe="25.32" data-medianpe="24.26" data-payout="0.6246246246246246"
-            data-exdiv="2026-09-15" data-buy="0"
-            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">KO</div>
-            <div class="sector">필수재</div>
-          </td>
-          <td class="num" data-label="현재가">$86.12</td>
-          <td class="num" data-label="현재 배당률">2.42%</td>
-          <td class="num" data-label="5년 최저 배당률">2.35%</td>
-          <td class="num" data-label="5년 평균 배당률">2.85%</td>
-          <td class="num" data-label="5년 최고 배당률">3.25%</td>
-          <td class="num" data-label="Forward P/E">25.3</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">21.3 / 24.3 / 27.4</td>
-          <td class="num" data-label="배당성향">62.46%</td>
-          <td class="num exdiv" data-label="배당락일">2026-09-15</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.42% · 5년 최저 2.35% / 평균 2.85% / 최고 3.25%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 25.3 · 5년 L/M/H 21.3 / 24.3 / 27.4"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="MMM" data-price="163.05" tabindex="0" data-yield="0.01852192578963508" data-minyield="0.01697" data-avgyield="0.06559"
-            data-maxyield="0.24244"
-            data-fwdpe="17.83" data-medianpe="14.81" data-payout="0.5364120781527532"
-            data-exdiv="2026-08-24" data-buy="0"
-            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">MMM</div>
-            <div class="sector">산업재</div>
-          </td>
-          <td class="num" data-label="현재가">$163.05</td>
-          <td class="num" data-label="현재 배당률">1.85%</td>
-          <td class="num" data-label="5년 최저 배당률">1.70%</td>
-          <td class="num" data-label="5년 평균 배당률">6.56%</td>
-          <td class="num" data-label="5년 최고 배당률">24.24%</td>
-          <td class="num" data-label="Forward P/E">17.8</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">9.9 / 14.8 / 21.8</td>
-          <td class="num" data-label="배당성향">53.64%</td>
-          <td class="num exdiv" data-label="배당락일">2026-08-24</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 1.85% · 5년 최저 1.70% / 평균 6.56% / 최고 24.24%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 17.8 · 5년 L/M/H 9.9 / 14.8 / 21.8"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-        <tr class=""
-            data-symbol="XOM" data-price="163.87" tabindex="0" data-yield="0.02489778482943797" data-minyield="0.02381" data-avgyield="0.03481"
-            data-maxyield="0.05832"
-            data-fwdpe="14.56" data-medianpe="13.55" data-payout="0.5164556962025316"
-            data-exdiv="2026-08-17" data-buy="0"
-            data-yieldcolor="1" data-pecolor="1" data-overallcolor="-1">
-          <td class="col-symbol">
-            <div class="symbol">XOM</div>
-            <div class="sector">에너지</div>
-          </td>
-          <td class="num" data-label="현재가">$163.87</td>
-          <td class="num" data-label="현재 배당률">2.49%</td>
-          <td class="num" data-label="5년 최저 배당률">2.38%</td>
-          <td class="num" data-label="5년 평균 배당률">3.48%</td>
-          <td class="num" data-label="5년 최고 배당률">5.83%</td>
-          <td class="num" data-label="Forward P/E">14.6</td>
-          <td class="num" data-label="5Y P/E (L/M/H)">6.9 / 13.6 / 26.6</td>
-          <td class="num" data-label="배당성향">51.65%</td>
-          <td class="num exdiv" data-label="배당락일">2026-08-17</td>
-          <td class="center" data-label="배당률 신호"><span class="dot" style="background:#e6a700" title="배당률 신호: 현재 2.49% · 5년 최저 2.38% / 평균 3.48% / 최고 5.83%"></span></td>
-          <td class="center" data-label="P/E 신호"><span class="dot" style="background:#e6a700" title="P/E 신호: forward 14.6 · 5년 L/M/H 6.9 / 13.6 / 26.6"></span></td>
-          <td class="center" data-label="종합"><span class="dot" style="background:#c7ccd4" title="종합: 미충족/데이터 부족"></span></td>
-        </tr>
-      </tbody>
-    </table>
+    <details class="criteria">
+      <summary>판단기준</summary>
+      <div class="criteria-body">
+        <p><b>1순위</b> = 종합 파랑(배당률·P/E 신호가 둘 다 파랑), <b>2순위</b> = 종합 초록(둘 다 초록 또는 파랑, 단 둘 다 파랑은 제외)</p>
+        <p>
+          <b>배당률 신호</b> — 현재 배당률(연간 배당금 ÷ 현재가)을 자체 5년 최저/평균/최고와 비교(높을수록 좋음):
+          <span class="legend-dot" style="background:#e5484d"></span>최저 이하
+          <span class="legend-dot" style="background:#e6a700"></span>최저~평균
+          <span class="legend-dot" style="background:#1a7f5a"></span>평균~최고
+          <span class="legend-dot" style="background:#1d4ed8"></span>최고 초과
+        </p>
+        <p>
+          <b>P/E 신호</b> — forward P/E를 자체 5년 Low/Median/High 기준 구간과 비교(낮을수록 좋음):
+          <span class="legend-dot" style="background:#1d4ed8"></span>(Low+Median)/2 이하
+          <span class="legend-dot" style="background:#1a7f5a"></span>~Median
+          <span class="legend-dot" style="background:#e6a700"></span>~(Median+High)/2
+          <span class="legend-dot" style="background:#e5484d"></span>(Median+High)/2 초과
+        </p>
+        <p>
+          <b>종합</b> — 배당률·P/E 신호가 <b>둘 다 초록 또는 파랑</b>일 때 충족:
+          <span class="legend-dot" style="background:#1a7f5a"></span>충족(2순위)
+          <span class="legend-dot" style="background:#1d4ed8"></span>강한 충족(1순위)
+          <span class="legend-dot" style="background:#c7ccd4"></span>미충족/데이터 부족
+        </p>
+        <p style="margin-bottom:0">목록에서 <b>굵은 글씨</b>는 해당 신호가 초록 또는 파랑이라는 뜻입니다.</p>
+      </div>
+    </details>
 
-    <footer>데이터 출처: Alpha Vantage(배당금·P/E) · 현재가 Twelve Data · 현재 배당률 = 연간 배당금 ÷ 현재가 · 5년 P/E 밴드는 trailing P/E(월간 종가 ÷ 직전 4분기 EPS)로 자체 계산 · 원(●)에 마우스를 올리면 상세 수치가 표시됩니다 · 열 제목을 클릭하면 정렬됩니다</footer>
-  </div>
+    <footer>데이터 출처: Alpha Vantage(배당금·P/E) · 현재가 Twelve Data · 현재 배당률 = 연간 배당금 ÷ 현재가 · 5년 P/E 밴드는 trailing P/E(월간 종가 ÷ 직전 4분기 EPS)로 자체 계산</footer>
+  </section>
 
-  <div id="detail-modal" class="modal" hidden><div class="modal-panel" id="detail-body"></div></div>
-  <script id="detail-data" type="application/json">{"ABBV": {"name": "AbbVie Inc", "sector": "헬스케어", "price": 260.02, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.02626721021459888, "api_yield": 0.0258, "yield_src": "price", "min_yield": 0.02609, "avg_yield": 0.03487, "max_yield": 0.04535, "fwd_pe": 16.39, "pe_low": 9.32, "pe_med": 15.24, "pe_high": 24.5, "payout": 1.923943661971831, "dps": 6.83, "eps": 3.55, "trailing_pe": 74.46, "ma50": null, "target": null, "ex_div": "2026-10-15", "div_date": null, "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "BLK": {"name": "BlackRock Inc", "sector": "금융", "price": 1064.99, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.020544793847829555, "api_yield": 0.0205, "yield_src": "price", "min_yield": 0.01698, "avg_yield": 0.02355, "max_yield": 0.03411, "fwd_pe": 16.53, "pe_low": 14.93, "pe_med": 21.12, "pe_high": 24.9, "payout": 0.5274831243972999, "dps": 21.88, "eps": 41.48, "trailing_pe": 25.58, "ma50": 1108.8, "target": 1323.31, "ex_div": "2026-09-08", "div_date": "2026-09-22", "yield_color": "yellow", "pe_color": "blue", "overall": null, "dq": null}, "COST": {"name": "Costco Wholesale Corp", "sector": "필수재", "price": 914.99, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.0060547109804478735, "api_yield": 0.006, "yield_src": "price", "min_yield": 0.0035, "avg_yield": 0.01025, "max_yield": 0.02872, "fwd_pe": 40.32, "pe_low": 34.5, "pe_med": 46.73, "pe_high": 61.21, "payout": 0.278391959798995, "dps": 5.54, "eps": 19.9, "trailing_pe": 46.37, "ma50": null, "target": null, "ex_div": "2026-07-24", "div_date": null, "yield_color": "yellow", "pe_color": "blue", "overall": null, "dq": "배당 필드는 원본 API 값이 비정상(0)이라 교차검증 값으로 보정됨"}, "CVX": {"name": "Chevron Corp", "sector": "에너지", "price": 207.19, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.03368888459867755, "api_yield": 0.0339, "yield_src": "price", "min_yield": 0.03096, "avg_yield": 0.03924, "max_yield": 0.04887, "fwd_pe": 15.2, "pe_low": 7.92, "pe_med": 14.28, "pe_high": 31.59, "payout": 0.670509125840538, "dps": 6.98, "eps": 10.41, "trailing_pe": 19.64, "ma50": null, "target": null, "ex_div": "2026-08-19", "div_date": null, "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "HD": {"name": "The Home Depot Inc", "sector": "소비재", "price": 282.5, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.01638938053097345, "api_yield": 0.0158, "yield_src": "price", "min_yield": 0.0159, "avg_yield": 0.02432, "max_yield": 0.03486, "fwd_pe": 19.76, "pe_low": 16.96, "pe_med": 22.51, "pe_high": 29.15, "payout": 0.3237762237762237, "dps": 4.63, "eps": 14.3, "trailing_pe": 20.5, "ma50": null, "target": null, "ex_div": "2026-09-03", "div_date": null, "yield_color": "yellow", "pe_color": "green", "overall": null, "dq": null}, "JNJ": {"name": "Johnson & Johnson", "sector": "헬스케어", "price": 258.74, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.020251990415088506, "api_yield": 0.0194, "yield_src": "price", "min_yield": 0.01986, "avg_yield": 0.02737, "max_yield": 0.03395, "fwd_pe": 21.01, "pe_low": 13.82, "pe_med": 16.4, "pe_high": 24.48, "payout": 0.6085946573751453, "dps": 5.24, "eps": 8.61, "trailing_pe": 31.5, "ma50": null, "target": null, "ex_div": "2026-08-25", "div_date": null, "yield_color": "yellow", "pe_color": "red", "overall": null, "dq": null}, "JPM": {"name": "JPMorgan Chase & Co", "sector": "금융", "price": 333.33, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.01800018000180002, "api_yield": 0.0177, "yield_src": "price", "min_yield": 0.0168, "avg_yield": 0.0235, "max_yield": 0.03828, "fwd_pe": 13.5, "pe_low": 8.3, "pe_med": 11.8, "pe_high": 16.35, "payout": 0.2571795970852979, "dps": 6.0, "eps": 23.33, "trailing_pe": 14.7, "ma50": 353.35, "target": 374.24, "ex_div": "2026-10-06", "div_date": "2026-10-31", "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "KO": {"name": "The Coca-Cola Company", "sector": "필수재", "price": 86.12, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.024152345564328843, "api_yield": 0.0235, "yield_src": "price", "min_yield": 0.02346, "avg_yield": 0.02847, "max_yield": 0.03251, "fwd_pe": 25.32, "pe_low": 21.32, "pe_med": 24.26, "pe_high": 27.45, "payout": 0.6246246246246246, "dps": 2.08, "eps": 3.33, "trailing_pe": 26.45, "ma50": 87.21, "target": 94.7, "ex_div": "2026-09-15", "div_date": "2026-10-01", "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "LMT": {"name": "Lockheed Martin Corporation", "sector": "산업재", "price": 505.54, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.027000830794793686, "api_yield": 0.026, "yield_src": "price", "min_yield": 0.01663, "avg_yield": 0.02569, "max_yield": 0.0318, "fwd_pe": 16.16, "pe_low": 14.38, "pe_med": 19.04, "pe_high": 30.62, "payout": 0.5031330630298563, "dps": 13.65, "eps": 27.13, "trailing_pe": 19.3, "ma50": 557.0, "target": 637.84, "ex_div": "2026-09-01", "div_date": "2026-09-25", "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "LOW": {"name": "Lowe's Companies Inc", "sector": "소비재", "price": 182.37, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.0265942863409552, "api_yield": 0.0247, "yield_src": "price", "min_yield": 0.01083, "avg_yield": 0.01864, "max_yield": 0.0259, "fwd_pe": 15.77, "pe_low": 14.04, "pe_med": 18.05, "pe_high": 23.05, "payout": 0.4202772963604853, "dps": 4.85, "eps": 11.54, "trailing_pe": 16.58, "ma50": 208.04, "target": 252.3, "ex_div": "2026-10-21", "div_date": "2026-11-04", "yield_color": "blue", "pe_color": "blue", "overall": "blue", "dq": null}, "MMM": {"name": "3M Company", "sector": "산업재", "price": 163.05, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.01852192578963508, "api_yield": 0.018, "yield_src": "price", "min_yield": 0.01697, "avg_yield": 0.06559, "max_yield": 0.24244, "fwd_pe": 17.83, "pe_low": 9.91, "pe_med": 14.81, "pe_high": 21.75, "payout": 0.5364120781527532, "dps": 3.02, "eps": 5.63, "trailing_pe": 30.12, "ma50": null, "target": null, "ex_div": "2026-08-24", "div_date": null, "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "NEE": {"name": "Nextera Energy Inc", "sector": "유틸리티", "price": 76.35, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.031159135559921416, "api_yield": 0.0315, "yield_src": "price", "min_yield": 0.0165, "avg_yield": 0.02592, "max_yield": 0.03788, "fwd_pe": 17.73, "pe_low": 17.36, "pe_med": 23.25, "pe_high": 36.76, "payout": 0.5346067415730337, "dps": 2.379, "eps": 4.45, "trailing_pe": 17.1, "ma50": null, "target": null, "ex_div": "2026-08-28", "div_date": null, "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "O": {"name": "Realty Income Corporation", "sector": "리츠", "price": 53.53, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.060433401830749106, "api_yield": 0.0584, "yield_src": "price", "min_yield": 0.03947, "avg_yield": 0.05173, "max_yield": 0.06574, "fwd_pe": 33.67, "pe_low": 26.19, "pe_med": 50.72, "pe_high": 70.19, "payout": 2.3613138686131383, "dps": 3.235, "eps": 1.37, "trailing_pe": 40.54, "ma50": 61.88, "target": 67.26, "ex_div": "2026-09-30", "div_date": "2026-10-15", "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "PEP": {"name": "PepsiCo Inc", "sector": "필수재", "price": 125.62, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.04577296608820251, "api_yield": 0.0449, "yield_src": "price", "min_yield": 0.02195, "avg_yield": 0.03119, "max_yield": 0.04581, "fwd_pe": 14.86, "pe_low": 15.16, "pe_med": 21.97, "pe_high": 27.9, "payout": 0.7545931758530183, "dps": 5.75, "eps": 7.62, "trailing_pe": 16.88, "ma50": null, "target": null, "ex_div": "2026-09-04", "div_date": null, "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "PG": {"name": "Procter & Gamble Company", "sector": "필수재", "price": 143.99, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.029578442947426904, "api_yield": 0.0289, "yield_src": "price", "min_yield": 0.02079, "avg_yield": 0.02513, "max_yield": 0.02969, "fwd_pe": 21.23, "pe_low": 20.69, "pe_med": 24.77, "pe_high": 28.9, "payout": 0.6512232415902142, "dps": 4.259, "eps": 6.54, "trailing_pe": 22.28, "ma50": 146.12, "target": 160.61, "ex_div": "2026-07-24", "div_date": "2026-08-17", "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "SBUX": {"name": "Starbucks Corporation", "sector": "소비재", "price": 94.84, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.0261493040911008, "api_yield": 0.0265, "yield_src": "price", "min_yield": 0.01573, "avg_yield": 0.02353, "max_yield": 0.03017, "fwd_pe": 30.86, "pe_low": 21.39, "pe_med": 30.87, "pe_high": 50.64, "payout": 1.4335260115606936, "dps": 2.48, "eps": 1.73, "trailing_pe": 54.83, "ma50": null, "target": null, "ex_div": "2026-08-14", "div_date": null, "yield_color": "green", "pe_color": "green", "overall": "green", "dq": null}, "UNH": {"name": "UnitedHealth Group Incorporated", "sector": "헬스케어", "price": 365.12, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.024512489044697633, "api_yield": 0.024, "yield_src": "price", "min_yield": 0.01106, "avg_yield": 0.01716, "max_yield": 0.0341, "fwd_pe": 16.58, "pe_low": 9.89, "pe_med": 21.43, "pe_high": 27.04, "payout": 0.5781653746770026, "dps": 8.95, "eps": 15.48, "trailing_pe": 23.99, "ma50": 401.18, "target": 481.72, "ex_div": "2026-09-14", "div_date": "2026-09-22", "yield_color": "green", "pe_color": "green", "overall": "green", "dq": null}, "WM": {"name": "Waste Management Inc", "sector": "필수재", "price": 201.93, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.017530827514485217, "api_yield": 0.017, "yield_src": "price", "min_yield": 0.00986, "avg_yield": 0.01495, "max_yield": 0.02018, "fwd_pe": 22.52, "pe_low": 26.36, "pe_med": 30.15, "pe_high": 34.43, "payout": 0.5007072135785007, "dps": 3.54, "eps": 7.07, "trailing_pe": 29.25, "ma50": null, "target": null, "ex_div": "2026-09-11", "div_date": null, "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "XOM": {"name": "Exxon Mobil Corp", "sector": "에너지", "price": 163.87, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.02489778482943797, "api_yield": 0.0257, "yield_src": "price", "min_yield": 0.02381, "avg_yield": 0.03481, "max_yield": 0.05832, "fwd_pe": 14.56, "pe_low": 6.87, "pe_med": 13.55, "pe_high": 26.55, "payout": 0.5164556962025316, "dps": 4.08, "eps": 7.9, "trailing_pe": 20.41, "ma50": 158.78, "target": 171.91, "ex_div": "2026-08-17", "div_date": "2026-09-10", "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}}</script>
-  <script>
+  <section id="view-list" hidden>
+    <div class="topbar"><button class="back" id="list-back" aria-label="뒤로">‹</button><div class="title" id="list-title"></div></div>
+    <div class="list" id="list-box">
+      <div class="lhead" id="lhead">
+        <button data-key="name">종목명</button><button class="r" data-key="yield">배당률</button><button class="r" data-key="pe">P/E</button><button class="c" data-key="overall">종합</button>
+      </div>
+      <div id="list-rows"></div>
+    </div>
+    <div class="empty" id="list-empty" hidden>해당하는 종목이 없습니다.</div>
+  </section>
+
+  <section id="view-stock" hidden>
+    <div class="topbar"><button class="back" id="stock-back" aria-label="뒤로">‹</button><div class="title" id="stock-title"></div></div>
+    <div class="card" id="stock-body"></div>
+  </section>
+
+</div>
+
+<script id="detail-data" type="application/json">{"ABBV": {"name": "AbbVie Inc", "sector": "헬스케어", "price": 260.02, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.02626721021459888, "api_yield": 0.0258, "yield_src": "price", "min_yield": 0.02609, "avg_yield": 0.03487, "max_yield": 0.04535, "fwd_pe": 16.39, "pe_low": 9.32, "pe_med": 15.24, "pe_high": 24.5, "payout": 1.923943661971831, "dps": 6.83, "eps": 3.55, "trailing_pe": 74.46, "ma50": null, "target": null, "ex_div": "2026-10-15", "div_date": null, "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "BLK": {"name": "BlackRock Inc", "sector": "금융", "price": 1064.99, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.020544793847829555, "api_yield": 0.0205, "yield_src": "price", "min_yield": 0.01698, "avg_yield": 0.02355, "max_yield": 0.03411, "fwd_pe": 16.53, "pe_low": 14.93, "pe_med": 21.12, "pe_high": 24.9, "payout": 0.5274831243972999, "dps": 21.88, "eps": 41.48, "trailing_pe": 25.58, "ma50": 1108.8, "target": 1323.31, "ex_div": "2026-09-08", "div_date": "2026-09-22", "yield_color": "yellow", "pe_color": "blue", "overall": null, "dq": null}, "COST": {"name": "Costco Wholesale Corp", "sector": "필수재", "price": 914.99, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.0060547109804478735, "api_yield": 0.006, "yield_src": "price", "min_yield": 0.0035, "avg_yield": 0.01025, "max_yield": 0.02872, "fwd_pe": 40.32, "pe_low": 34.5, "pe_med": 46.73, "pe_high": 61.21, "payout": 0.278391959798995, "dps": 5.54, "eps": 19.9, "trailing_pe": 46.37, "ma50": null, "target": null, "ex_div": "2026-07-24", "div_date": null, "yield_color": "yellow", "pe_color": "blue", "overall": null, "dq": "배당 필드는 원본 API 값이 비정상(0)이라 교차검증 값으로 보정됨"}, "CVX": {"name": "Chevron Corp", "sector": "에너지", "price": 207.19, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.03368888459867755, "api_yield": 0.0339, "yield_src": "price", "min_yield": 0.03096, "avg_yield": 0.03924, "max_yield": 0.04887, "fwd_pe": 15.2, "pe_low": 7.92, "pe_med": 14.28, "pe_high": 31.59, "payout": 0.670509125840538, "dps": 6.98, "eps": 10.41, "trailing_pe": 19.64, "ma50": null, "target": null, "ex_div": "2026-08-19", "div_date": null, "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "HD": {"name": "The Home Depot Inc", "sector": "소비재", "price": 282.5, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.01638938053097345, "api_yield": 0.0158, "yield_src": "price", "min_yield": 0.0159, "avg_yield": 0.02432, "max_yield": 0.03486, "fwd_pe": 19.76, "pe_low": 16.96, "pe_med": 22.51, "pe_high": 29.15, "payout": 0.3237762237762237, "dps": 4.63, "eps": 14.3, "trailing_pe": 20.5, "ma50": null, "target": null, "ex_div": "2026-09-03", "div_date": null, "yield_color": "yellow", "pe_color": "green", "overall": null, "dq": null}, "JNJ": {"name": "Johnson & Johnson", "sector": "헬스케어", "price": 258.74, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.020251990415088506, "api_yield": 0.0194, "yield_src": "price", "min_yield": 0.01986, "avg_yield": 0.02737, "max_yield": 0.03395, "fwd_pe": 21.01, "pe_low": 13.82, "pe_med": 16.4, "pe_high": 24.48, "payout": 0.6085946573751453, "dps": 5.24, "eps": 8.61, "trailing_pe": 31.5, "ma50": null, "target": null, "ex_div": "2026-08-25", "div_date": null, "yield_color": "yellow", "pe_color": "red", "overall": null, "dq": null}, "JPM": {"name": "JPMorgan Chase & Co", "sector": "금융", "price": 333.33, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.01800018000180002, "api_yield": 0.0177, "yield_src": "price", "min_yield": 0.0168, "avg_yield": 0.0235, "max_yield": 0.03828, "fwd_pe": 13.5, "pe_low": 8.3, "pe_med": 11.8, "pe_high": 16.35, "payout": 0.2571795970852979, "dps": 6.0, "eps": 23.33, "trailing_pe": 14.7, "ma50": 353.35, "target": 374.24, "ex_div": "2026-10-06", "div_date": "2026-10-31", "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "KO": {"name": "The Coca-Cola Company", "sector": "필수재", "price": 86.12, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.024152345564328843, "api_yield": 0.0235, "yield_src": "price", "min_yield": 0.02346, "avg_yield": 0.02847, "max_yield": 0.03251, "fwd_pe": 25.32, "pe_low": 21.32, "pe_med": 24.26, "pe_high": 27.45, "payout": 0.6246246246246246, "dps": 2.08, "eps": 3.33, "trailing_pe": 26.45, "ma50": 87.21, "target": 94.7, "ex_div": "2026-09-15", "div_date": "2026-10-01", "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "LMT": {"name": "Lockheed Martin Corporation", "sector": "산업재", "price": 505.54, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.027000830794793686, "api_yield": 0.026, "yield_src": "price", "min_yield": 0.01663, "avg_yield": 0.02569, "max_yield": 0.0318, "fwd_pe": 16.16, "pe_low": 14.38, "pe_med": 19.04, "pe_high": 30.62, "payout": 0.5031330630298563, "dps": 13.65, "eps": 27.13, "trailing_pe": 19.3, "ma50": 557.0, "target": 637.84, "ex_div": "2026-09-01", "div_date": "2026-09-25", "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "LOW": {"name": "Lowe's Companies Inc", "sector": "소비재", "price": 182.37, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.0265942863409552, "api_yield": 0.0247, "yield_src": "price", "min_yield": 0.01083, "avg_yield": 0.01864, "max_yield": 0.0259, "fwd_pe": 15.77, "pe_low": 14.04, "pe_med": 18.05, "pe_high": 23.05, "payout": 0.4202772963604853, "dps": 4.85, "eps": 11.54, "trailing_pe": 16.58, "ma50": 208.04, "target": 252.3, "ex_div": "2026-10-21", "div_date": "2026-11-04", "yield_color": "blue", "pe_color": "blue", "overall": "blue", "dq": null}, "MMM": {"name": "3M Company", "sector": "산업재", "price": 163.05, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.01852192578963508, "api_yield": 0.018, "yield_src": "price", "min_yield": 0.01697, "avg_yield": 0.06559, "max_yield": 0.24244, "fwd_pe": 17.83, "pe_low": 9.91, "pe_med": 14.81, "pe_high": 21.75, "payout": 0.5364120781527532, "dps": 3.02, "eps": 5.63, "trailing_pe": 30.12, "ma50": null, "target": null, "ex_div": "2026-08-24", "div_date": null, "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}, "NEE": {"name": "Nextera Energy Inc", "sector": "유틸리티", "price": 76.35, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.031159135559921416, "api_yield": 0.0315, "yield_src": "price", "min_yield": 0.0165, "avg_yield": 0.02592, "max_yield": 0.03788, "fwd_pe": 17.73, "pe_low": 17.36, "pe_med": 23.25, "pe_high": 36.76, "payout": 0.5346067415730337, "dps": 2.379, "eps": 4.45, "trailing_pe": 17.1, "ma50": null, "target": null, "ex_div": "2026-08-28", "div_date": null, "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "O": {"name": "Realty Income Corporation", "sector": "리츠", "price": 53.53, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.060433401830749106, "api_yield": 0.0584, "yield_src": "price", "min_yield": 0.03947, "avg_yield": 0.05173, "max_yield": 0.06574, "fwd_pe": 33.67, "pe_low": 26.19, "pe_med": 50.72, "pe_high": 70.19, "payout": 2.3613138686131383, "dps": 3.235, "eps": 1.37, "trailing_pe": 40.54, "ma50": 61.88, "target": 67.26, "ex_div": "2026-09-30", "div_date": "2026-10-15", "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "PEP": {"name": "PepsiCo Inc", "sector": "필수재", "price": 125.62, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.04577296608820251, "api_yield": 0.0449, "yield_src": "price", "min_yield": 0.02195, "avg_yield": 0.03119, "max_yield": 0.04581, "fwd_pe": 14.86, "pe_low": 15.16, "pe_med": 21.97, "pe_high": 27.9, "payout": 0.7545931758530183, "dps": 5.75, "eps": 7.62, "trailing_pe": 16.88, "ma50": null, "target": null, "ex_div": "2026-09-04", "div_date": null, "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "PG": {"name": "Procter & Gamble Company", "sector": "필수재", "price": 143.99, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.029578442947426904, "api_yield": 0.0289, "yield_src": "price", "min_yield": 0.02079, "avg_yield": 0.02513, "max_yield": 0.02969, "fwd_pe": 21.23, "pe_low": 20.69, "pe_med": 24.77, "pe_high": 28.9, "payout": 0.6512232415902142, "dps": 4.259, "eps": 6.54, "trailing_pe": 22.28, "ma50": 146.12, "target": 160.61, "ex_div": "2026-07-24", "div_date": "2026-08-17", "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "SBUX": {"name": "Starbucks Corporation", "sector": "소비재", "price": 94.84, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.0261493040911008, "api_yield": 0.0265, "yield_src": "price", "min_yield": 0.01573, "avg_yield": 0.02353, "max_yield": 0.03017, "fwd_pe": 30.86, "pe_low": 21.39, "pe_med": 30.87, "pe_high": 50.64, "payout": 1.4335260115606936, "dps": 2.48, "eps": 1.73, "trailing_pe": 54.83, "ma50": null, "target": null, "ex_div": "2026-08-14", "div_date": null, "yield_color": "green", "pe_color": "green", "overall": "green", "dq": null}, "UNH": {"name": "UnitedHealth Group Incorporated", "sector": "헬스케어", "price": 365.12, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.024512489044697633, "api_yield": 0.024, "yield_src": "price", "min_yield": 0.01106, "avg_yield": 0.01716, "max_yield": 0.0341, "fwd_pe": 16.58, "pe_low": 9.89, "pe_med": 21.43, "pe_high": 27.04, "payout": 0.5781653746770026, "dps": 8.95, "eps": 15.48, "trailing_pe": 23.99, "ma50": 401.18, "target": 481.72, "ex_div": "2026-09-14", "div_date": "2026-09-22", "yield_color": "green", "pe_color": "green", "overall": "green", "dq": null}, "WM": {"name": "Waste Management Inc", "sector": "필수재", "price": 201.93, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.017530827514485217, "api_yield": 0.017, "yield_src": "price", "min_yield": 0.00986, "avg_yield": 0.01495, "max_yield": 0.02018, "fwd_pe": 22.52, "pe_low": 26.36, "pe_med": 30.15, "pe_high": 34.43, "payout": 0.5007072135785007, "dps": 3.54, "eps": 7.07, "trailing_pe": 29.25, "ma50": null, "target": null, "ex_div": "2026-09-11", "div_date": null, "yield_color": "green", "pe_color": "blue", "overall": "green", "dq": null}, "XOM": {"name": "Exxon Mobil Corp", "sector": "에너지", "price": 163.87, "price_at": "2026-10-02 06:03 KST", "cur_yield": 0.02489778482943797, "api_yield": 0.0257, "yield_src": "price", "min_yield": 0.02381, "avg_yield": 0.03481, "max_yield": 0.05832, "fwd_pe": 14.56, "pe_low": 6.87, "pe_med": 13.55, "pe_high": 26.55, "payout": 0.5164556962025316, "dps": 4.08, "eps": 7.9, "trailing_pe": 20.41, "ma50": 158.78, "target": 171.91, "ex_div": "2026-08-17", "div_date": "2026-09-10", "yield_color": "yellow", "pe_color": "yellow", "overall": null, "dq": null}}</script>
+<script id="order-data" type="application/json">["LOW", "LMT", "NEE", "O", "PEP", "PG", "SBUX", "UNH", "WM", "ABBV", "BLK", "COST", "CVX", "HD", "JNJ", "JPM", "KO", "MMM", "XOM"]</script>
+<script>
 (function () {
-  var table = document.getElementById('dashboard-table');
-  var tbody = table.querySelector('tbody');
-  var tiles = document.querySelectorAll('.stat-tile[data-filter]');
-  var empty = document.getElementById('empty-msg');
-  var current = 'all';
-
-  function applyFilter() {
-    var n = 0;
-    tbody.querySelectorAll('tr').forEach(function (tr) {
-      var tier = parseInt(tr.getAttribute('data-buy'), 10);
-      var show = current === 'all' || (current === 'blue' && tier === 2) || (current === 'green' && tier === 1);
-      tr.classList.toggle('is-hidden', !show);
-      if (show) n++;
-    });
-    empty.hidden = n !== 0;
-    table.classList.toggle('is-hidden', n === 0);
-    tiles.forEach(function (t) {
-      var on = t.getAttribute('data-filter') === current;
-      t.classList.toggle('active', on);
-      t.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-  }
-  tiles.forEach(function (t) {
-    t.addEventListener('click', function () { current = t.getAttribute('data-filter'); applyFilter(); });
-  });
-  applyFilter();
-
-  // 배당락일이 오늘(기기 기준) 이후면 볼드
-  function pad(n) { return String(n).padStart(2, '0'); }
-  var d0 = new Date();
-  var today = d0.getFullYear() + '-' + pad(d0.getMonth() + 1) + '-' + pad(d0.getDate());
-  tbody.querySelectorAll('tr').forEach(function (tr) {
-    var ex = tr.getAttribute('data-exdiv');
-    var c = tr.querySelector('td.exdiv');
-    if (c && ex && ex > today) c.classList.add('bold');
-  });
-
-  // 상세 팝업
-  var DATA = JSON.parse(document.getElementById('detail-data').textContent);
-  var modal = document.getElementById('detail-modal');
-  var body = document.getElementById('detail-body');
+  var D = JSON.parse(document.getElementById('detail-data').textContent);
+  var ORDER = JSON.parse(document.getElementById('order-data').textContent);
   var COL = { red: '#e5484d', yellow: '#e6a700', green: '#1a7f5a', blue: '#1d4ed8' };
   var CNAME = { red: '빨강', yellow: '노랑', green: '초록', blue: '파랑' };
   var YTXT = { red: '5년 최저 이하', yellow: '5년 최저~평균 구간', green: '5년 평균~최고 구간', blue: '5년 최고 초과' };
   var PTXT = { blue: '(Low+Median)/2 이하(가장 저평가)', green: '(Low+Median)/2 ~ Median', yellow: 'Median ~ (Median+High)/2', red: '(Median+High)/2 초과(고평가)' };
+  var TITLES = { blue: '1순위', green: '2순위', all: '전체 List' };
+  var RANK = { blue: 2, green: 1 };
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  var d0 = new Date();
+  var today = d0.getFullYear() + '-' + pad(d0.getMonth() + 1) + '-' + pad(d0.getDate());
   function pct(x) { return x == null ? '—' : (x * 100).toFixed(2) + '%'; }
   function num(x, d) { return x == null ? '—' : Number(x).toFixed(d == null ? 1 : d); }
   function usd(x) { return x == null ? '—' : '$' + Number(x).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function dot(c) { return '<span class="dot" style="background:' + (COL[c] || '#c7ccd4') + '"></span>'; }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); }
+  function good(c) { return c === 'green' || c === 'blue'; }
+
+  /* ---------- 목록 ---------- */
+  var sortSt = { key: null, dir: 1 }, lastListKey = null;
+  function items(k) {
+    return ORDER.filter(function (s) {
+      var o = D[s].overall;
+      return k === 'all' || (k === 'blue' && o === 'blue') || (k === 'green' && o === 'green');
+    });
+  }
+  function sortVal(s, key) {
+    var d = D[s];
+    if (key === 'name') return s;
+    if (key === 'yield') return d.cur_yield;
+    if (key === 'pe') return d.fwd_pe;
+    return RANK[d.overall] || 0;
+  }
+  function renderList(k) {
+    if (lastListKey !== k) { sortSt = { key: null, dir: 1 }; lastListKey = k; }
+    $('list-title').textContent = TITLES[k];
+    var arr = items(k);
+    if (sortSt.key) {
+      arr = arr.slice().sort(function (a, b) {
+        var av = sortVal(a, sortSt.key), bv = sortVal(b, sortSt.key);
+        if (av == null && bv == null) return 0;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        var c = typeof av === 'string' ? av.localeCompare(bv) : av - bv;
+        return c * sortSt.dir;
+      });
+    }
+    $('list-rows').innerHTML = arr.map(function (s) {
+      var d = D[s];
+      return '<a class="row" href="#/stock/' + encodeURIComponent(s) + '">' +
+        '<div class="c-name"><b>' + esc(s) + '</b><small>' + esc(d.sector || '') + '</small></div>' +
+        '<div class="c-num' + (good(d.yield_color) ? ' bold' : '') + '">' + pct(d.cur_yield) + '</div>' +
+        '<div class="c-num' + (good(d.pe_color) ? ' bold' : '') + '">' + num(d.fwd_pe) + '</div>' +
+        '<div class="c-dot">' + dot(d.overall) + '</div></a>';
+    }).join('');
+    $('list-empty').hidden = arr.length !== 0;
+    $('list-box').hidden = arr.length === 0;
+    document.querySelectorAll('#lhead button').forEach(function (b) {
+      var on = b.getAttribute('data-key') === sortSt.key;
+      b.classList.toggle('on', on);
+      var base = b.getAttribute('data-label') || b.textContent.replace(/[▲▼]/g, '').trim();
+      b.setAttribute('data-label', base);
+      b.textContent = base + (on ? (sortSt.dir === 1 ? ' ▲' : ' ▼') : '');
+    });
+  }
+  $('lhead').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var key = b.getAttribute('data-key');
+    if (sortSt.key === key) sortSt.dir *= -1; else sortSt = { key: key, dir: 1 };
+    renderList(cur.k);
+  });
+
+  /* ---------- 종목 상세(페이지) ---------- */
   function range(lo, mid, hi, val, f) {
     if ([lo, mid, hi, val].some(function (v) { return v == null; })) return '<div class="muted">데이터 없음</div>';
     var mn = Math.min(lo, val), mx = Math.max(hi, val), sp = (mx - mn) || 1;
@@ -693,124 +245,90 @@
       '<div class="rng-l"><span>' + f(lo) + '</span><span>' + f(mid) + '</span><span>' + f(hi) + '</span></div>';
   }
   function cell(k, v) { return v == null || v === '—' ? '' : '<div><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
-
-  function open(sym) {
-    var d = DATA[sym]; if (!d) return;
-    var oc = d.overall, tag = oc === 'blue' ? '종합 파랑(강한 충족)' : (oc === 'green' ? '종합 초록(충족)' : '종합 미충족');
-    var h = '<button class="modal-close" aria-label="닫기">×</button>' +
-      '<div class="m-head"><span class="sym">' + esc(sym) + '</span><span class="m-badge ' + (oc || '') + '">' + dot(oc) + tag + '</span></div>' +
+  function renderStock(sym) {
+    var d = D[sym]; if (!d) return;
+    $('stock-title').textContent = sym;
+    var oc = d.overall, tag = oc === 'blue' ? '1순위 · 종합 파랑' : (oc === 'green' ? '2순위 · 종합 초록' : '종합 미충족');
+    var h = '<div class="m-head"><span class="sym">' + esc(sym) + '</span><span class="m-badge ' + (oc || '') + '">' + dot(oc) + tag + '</span></div>' +
       '<div class="m-sub">' + esc(d.name || '') + (d.sector ? ' · ' + esc(d.sector) : '') + '</div>';
-
     h += '<div class="m-grid">' + cell('현재가', d.price == null ? null : usd(d.price)) + cell('현재 배당률', pct(d.cur_yield)) +
       cell('연간 배당금', d.dps == null ? null : usd(d.dps)) + cell('배당성향', pct(d.payout)) +
       cell('Forward P/E', num(d.fwd_pe)) + cell('Trailing P/E', d.trailing_pe == null ? null : num(d.trailing_pe)) +
       cell('EPS', d.eps == null ? null : usd(d.eps)) + cell('50일 이동평균', d.ma50 == null ? null : usd(d.ma50)) +
       cell('애널리스트 목표가', d.target == null ? null : usd(d.target)) + '</div>';
-
     if (d.yield_src === 'price') h += '<div class="m-note">현재 배당률 = 연간 배당금 ÷ 현재가 (Alpha Vantage 제공값: ' + pct(d.api_yield) + ')</div>';
     h += '<div class="m-sec"><h3>' + dot(d.yield_color) + '배당률 신호 ' + (d.yield_color ? '· ' + CNAME[d.yield_color] : '') + '</h3>' +
       range(d.min_yield, d.avg_yield, d.max_yield, d.cur_yield, pct) +
       '<div class="m-note">5년 최저 / 평균 / 최고 (검은 막대 = 현재 ' + pct(d.cur_yield) + ')' + (d.yield_color ? '<br>현재 배당률은 <b>' + YTXT[d.yield_color] + '</b>입니다.' : '') + '</div></div>';
-
     h += '<div class="m-sec"><h3>' + dot(d.pe_color) + 'P/E 신호 ' + (d.pe_color ? '· ' + CNAME[d.pe_color] : '') + '</h3>' +
       range(d.pe_low, d.pe_med, d.pe_high, d.fwd_pe, function (x) { return num(x); }) +
       '<div class="m-note">5년 Low / Median / High (검은 막대 = forward ' + num(d.fwd_pe) + ')' + (d.pe_color ? '<br>forward P/E는 <b>' + PTXT[d.pe_color] + '</b> 구간입니다.' : '') + '</div></div>';
-
     var exTxt = '—';
     if (d.ex_div) {
       var diff = Math.round((new Date(d.ex_div) - new Date(today)) / 86400000);
-      exTxt = esc(d.ex_div) + (d.ex_div > today ? ' <span class="muted">(예정 · D-' + diff + ')</span>' : ' <span class="muted">(지남)</span>');
+      var up = d.ex_div > today;
+      exTxt = (up ? '<b>' + esc(d.ex_div) + '</b>' : esc(d.ex_div)) + (up ? ' <span class="muted">(예정 · D-' + diff + ')</span>' : ' <span class="muted">(지남)</span>');
     }
     h += '<div class="m-sec"><div class="m-grid">' + cell('배당락일', exTxt) + cell('배당 지급일', d.div_date ? esc(d.div_date) : null) + '</div>';
     if (d.price_at) h += '<div class="m-note">현재가 기준: ' + esc(d.price_at) + '</div>';
     if (d.dq) h += '<div class="m-note">⚠ ' + esc(d.dq) + '</div>';
     h += '</div>';
-    body.innerHTML = h; modal.hidden = false; document.body.style.overflow = 'hidden';
-    body.querySelector('.modal-close').addEventListener('click', close);
+    $('stock-body').innerHTML = h;
   }
-  function close() { modal.hidden = true; document.body.style.overflow = ''; }
-  modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
-  tbody.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (tr) open(tr.getAttribute('data-symbol')); });
-  tbody.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var tr = e.target.closest('tr'); if (tr) open(tr.getAttribute('data-symbol')); } });
+
+  /* ---------- 화면 전환(주소 해시 = 뒤로가기 연동) ---------- */
+  var cur = null, scrollMem = {}, forward = false, depth = 0;
+  function parse() {
+    var p = location.hash.replace(/^#\/?/, '').split('/');
+    if (p[0] === 'list' && TITLES[p[1]]) return { v: 'list', k: p[1] };
+    if (p[0] === 'stock') { var s = decodeURIComponent(p[1] || ''); if (D[s]) return { v: 'stock', k: s }; }
+    return { v: 'home', k: '' };
+  }
+  function keyOf(r) { return r.v + ':' + r.k; }
+  function onRoute() {
+    if (cur) scrollMem[keyOf(cur)] = window.scrollY;
+    var back = !forward; forward = false;
+    if (back && depth > 0) depth--;
+    var r = parse();
+    $('view-home').hidden = r.v !== 'home';
+    $('view-list').hidden = r.v !== 'list';
+    $('view-stock').hidden = r.v !== 'stock';
+    cur = r;
+    if (r.v === 'list') renderList(r.k);
+    if (r.v === 'stock') renderStock(r.k);
+    window.scrollTo(0, back && scrollMem[keyOf(r)] != null ? scrollMem[keyOf(r)] : 0);
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#/"]');
+    if (a && a.getAttribute('href') !== location.hash) { forward = true; depth++; }
+  });
+  function goBack(parent) {
+    if (depth > 0) { history.back(); }
+    else { forward = true; location.hash = parent; }
+  }
+  $('list-back').addEventListener('click', function () { goBack('#/'); });
+  $('stock-back').addEventListener('click', function () { goBack('#/list/all'); });
+  window.addEventListener('hashchange', onRoute);
+  onRoute();
+
+  /* ---------- 최종 업데이트(KST)·오래된 데이터 경고 ---------- */
+  (function () {
+    var el = $('updated-line'); if (!el) return;
+    var t = new Date(el.getAttribute('data-updated')); if (isNaN(t)) return;
+    var k = new Date(t.getTime() + 9 * 3600 * 1000);
+    $('updated-kst').textContent = k.getUTCFullYear() + '-' + pad(k.getUTCMonth() + 1) + '-' + pad(k.getUTCDate()) + ' ' + pad(k.getUTCHours()) + ':' + pad(k.getUTCMinutes()) + ' KST';
+    var days = (Date.now() - t.getTime()) / 86400000;
+    if (days > 3) { var w = $('stale-warning'); w.textContent = '⚠ 데이터가 ' + Math.floor(days) + '일째 갱신되지 않았습니다. 예약작업 상태를 확인하세요.'; w.hidden = false; }
+  })();
 })();
 </script>
-  <script>
-    (function() {
-      var table = document.getElementById('dashboard-table');
-      var tbody = table.querySelector('tbody');
-      var ths = table.querySelectorAll('th.sortable');
-      var state = { key: null, dir: 1 };
-
-      ths.forEach(function(th) {
-        th.addEventListener('click', function() {
-          var key = th.getAttribute('data-key');
-          var type = th.getAttribute('data-type');
-          if (state.key === key) {
-            state.dir *= -1;
-          } else {
-            state.key = key;
-            state.dir = 1;
-          }
-          ths.forEach(function(t) {
-            t.classList.remove('sorted');
-            t.querySelector('.arrow').textContent = '↕';
-          });
-          th.classList.add('sorted');
-          th.querySelector('.arrow').textContent = state.dir === 1 ? '▲' : '▼';
-
-          var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
-          rows.sort(function(a, b) {
-            var av = a.getAttribute('data-' + key);
-            var bv = b.getAttribute('data-' + key);
-            var cmp;
-            if (type === 'color') {
-              // 색상 등급: 파랑=3 > 초록=2 > 노랑=1 > 빨강=0, 회색(-1)은 방향과 무관하게 항상 맨 아래
-              var an = parseFloat(av), bn = parseFloat(bv);
-              if (an === -1 && bn === -1) { cmp = 0; }
-              else if (an === -1) { cmp = 1; }
-              else if (bn === -1) { cmp = -1; }
-              else { cmp = (an - bn) * state.dir; }
-            } else if (type === 'num') {
-              cmp = parseFloat(av) - parseFloat(bv);
-            } else {
-              cmp = av.localeCompare(bv);
-            }
-            if (type !== 'color') { cmp = cmp * state.dir; }
-            return cmp;
-          });
-          rows.forEach(function(r) { tbody.appendChild(r); });
-        });
-      });
-    })();
-  </script>
-  <script>
-    // 최종 업데이트 시각을 KST로 표시하고, 3일 넘게 갱신이 없으면 경고를 띄움.
-    (function() {
-      var el = document.getElementById('updated-line');
-      if (!el) return;
-      var t = new Date(el.getAttribute('data-updated'));
-      if (isNaN(t)) return;
-      var k = new Date(t.getTime() + 9 * 3600 * 1000);
-      var p = function(n) { return String(n).padStart(2, '0'); };
-      document.getElementById('updated-kst').textContent =
-        k.getUTCFullYear() + '-' + p(k.getUTCMonth() + 1) + '-' + p(k.getUTCDate()) + ' ' +
-        p(k.getUTCHours()) + ':' + p(k.getUTCMinutes()) + ' KST';
-      var days = (Date.now() - t.getTime()) / 86400000;
-      if (days > 3) {
-        var w = document.getElementById('stale-warning');
-        w.textContent = '⚠ 데이터가 ' + Math.floor(days) + '일째 갱신되지 않았습니다. 예약작업 상태를 확인하세요.';
-        w.hidden = false;
-      }
-    })();
-  </script>
-  <script>
-    // 홈 화면 설치(PWA)를 위한 최소 서비스워커 등록. 실패해도 페이지 동작에는 영향 없음.
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('service-worker.js').catch(function() {});
-      });
-    }
-  </script>
+<script>
+  // 홈 화면 설치(PWA)를 위한 최소 서비스워커 등록. 실패해도 페이지 동작에는 영향 없음.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>
