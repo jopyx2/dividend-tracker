@@ -105,7 +105,7 @@
 
   <section id="view-home">
     <h1>미국 배당주 적정주가 추적기</h1>
-    <div class="subtitle" id="updated-line" data-updated="2026-10-02T14:54:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 23:54 KST</b> · 대상 19종목</div>
+    <div class="subtitle" id="updated-line" data-updated="2026-10-02T14:59:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 23:59 KST</b> · 대상 19종목</div>
     <div id="stale-warning" hidden></div>
 
     <div class="rank-cards">
@@ -117,28 +117,29 @@
     <details class="criteria">
       <summary>판단기준</summary>
       <div class="criteria-body">
-        <p><b>1순위</b> = 종합 파랑(배당률·P/E 신호가 둘 다 파랑), <b>2순위</b> = 종합 초록(둘 다 초록 또는 파랑, 단 둘 다 파랑은 제외)</p>
+        <p><b>1순위 · 최우선 관심</b> — 고배당과 저평가가 동시에 최상위 구간인 종목. 배당 매력도 '매우 높음' + 밸류에이션 '저평가'일 때입니다.</p>
+        <p><b>2순위 · 관심</b> — 배당 매력도와 밸류에이션이 둘 다 '양호' 이상인 종목(1순위 제외).</p>
         <p>
-          <b>배당률 신호</b> — 현재 배당률(연간 배당금 ÷ 현재가)을 자체 5년 최저/평균/최고와 비교(높을수록 좋음):
-          <span class="legend-dot" style="background:#e5484d"></span>최저 이하
-          <span class="legend-dot" style="background:#e6a700"></span>최저~평균
-          <span class="legend-dot" style="background:#1a7f5a"></span>평균~최고
-          <span class="legend-dot" style="background:#1d4ed8"></span>최고 초과
+          <b>배당 매력도</b> — 현재 배당률(연간 배당금 ÷ 현재가)을 이 종목의 5년 최저·평균·최고와 비교합니다. 높을수록 유리합니다.<br>
+          <span class="legend-dot" style="background:#1d4ed8"></span>매우 높음 · 5년 최고 초과
+          <span class="legend-dot" style="background:#1a7f5a"></span>양호 · 평균~최고
+          <span class="legend-dot" style="background:#e6a700"></span>보통 · 최저~평균
+          <span class="legend-dot" style="background:#e5484d"></span>낮음 · 최저 이하
         </p>
         <p>
-          <b>P/E 신호</b> — forward P/E를 자체 5년 Low/Median/High 기준 구간과 비교(낮을수록 좋음):
-          <span class="legend-dot" style="background:#1d4ed8"></span>(Low+Median)/2 이하
-          <span class="legend-dot" style="background:#1a7f5a"></span>~Median
-          <span class="legend-dot" style="background:#e6a700"></span>~(Median+High)/2
-          <span class="legend-dot" style="background:#e5484d"></span>(Median+High)/2 초과
+          <b>밸류에이션(P/E)</b> — 예상 P/E(forward)를 5년 Low·Median·High와 비교합니다. 낮을수록 싸다는 뜻입니다.<br>
+          <span class="legend-dot" style="background:#1d4ed8"></span>저평가 · Low~Median 중간 이하
+          <span class="legend-dot" style="background:#1a7f5a"></span>적정 이하 · Median 이하
+          <span class="legend-dot" style="background:#e6a700"></span>다소 부담 · Median~High 중간까지
+          <span class="legend-dot" style="background:#e5484d"></span>고평가 · 그 이상
         </p>
         <p>
-          <b>종합</b> — 배당률·P/E 신호가 <b>둘 다 초록 또는 파랑</b>일 때 충족:
-          <span class="legend-dot" style="background:#1a7f5a"></span>충족(2순위)
-          <span class="legend-dot" style="background:#1d4ed8"></span>강한 충족(1순위)
-          <span class="legend-dot" style="background:#c7ccd4"></span>미충족/데이터 부족
+          <b>종합</b>
+          <span class="legend-dot" style="background:#1d4ed8"></span>1순위
+          <span class="legend-dot" style="background:#1a7f5a"></span>2순위
+          <span class="legend-dot" style="background:#c7ccd4"></span>조건 미충족·데이터 부족
         </p>
-        <p style="margin-bottom:0">목록에서 <b>굵은 글씨</b>는 해당 신호가 초록 또는 파랑이라는 뜻입니다.</p>
+        <p style="margin-bottom:0">목록의 <b>굵은 글씨</b>는 해당 항목이 '양호' 이상이라는 뜻입니다. 과거 데이터에 근거한 참고 지표이며 투자 권유가 아닙니다.</p>
       </div>
     </details>
 
@@ -170,7 +171,8 @@
   var D = JSON.parse(document.getElementById('detail-data').textContent);
   var ORDER = JSON.parse(document.getElementById('order-data').textContent);
   var COL = { red: '#e5484d', yellow: '#e6a700', green: '#1a7f5a', blue: '#1d4ed8' };
-  var CNAME = { red: '빨강', yellow: '노랑', green: '초록', blue: '파랑' };
+  var YLAB = { red: '낮음', yellow: '보통', green: '양호', blue: '매우 높음' };
+  var PLAB = { red: '고평가', yellow: '다소 부담', green: '적정 이하', blue: '저평가' };
   var YTXT = { red: '5년 최저 이하', yellow: '5년 최저~평균 구간', green: '5년 평균~최고 구간', blue: '5년 최고 초과' };
   var PTXT = { blue: '(Low+Median)/2 이하(가장 저평가)', green: '(Low+Median)/2 ~ Median', yellow: 'Median ~ (Median+High)/2', red: '(Median+High)/2 초과(고평가)' };
   var TITLES = { blue: '1순위', green: '2순위', all: '전체 List' };
@@ -246,34 +248,41 @@
     var mn = Math.min(lo, val), mx = Math.max(hi, val), sp = (mx - mn) || 1;
     var p = function (v) { return (v - mn) / sp * 100; };
     var pc = p(val), lp = Math.min(88, Math.max(12, pc));
+    var items = [[names[0], lo], [names[1], mid], [names[2], hi]], out = [], merged = false;
+    items.forEach(function (it) {
+      if (!merged && f(it[1]) === f(val)) { merged = true; out.push('<span>' + (it[0] === names[0] ? '5년 ' : '') + it[0] + '(현재) <b class="cur">' + f(val) + '</b></span>'); }
+      else out.push('<span>' + (it[0] === names[0] ? '5년 ' : '') + it[0] + ' <b>' + f(it[1]) + '</b></span>');
+    });
+    if (!merged) out.push('<span>현재 <b class="cur">' + f(val) + '</b></span>');
     return '<div class="rng-wrap"><span class="rng-val" style="left:' + lp.toFixed(1) + '%">' + f(val) + '</span>' +
       '<div class="rng-bar"><span class="rng-seg" style="left:' + p(lo).toFixed(1) + '%;width:' + (p(hi) - p(lo)).toFixed(1) + '%"></span>' +
       '<span class="rng-mid" style="left:' + p(mid).toFixed(1) + '%"></span><span class="rng-cur" style="left:' + pc.toFixed(1) + '%"></span></div></div>' +
-      '<div class="rng-line"><span>5년 ' + names[0] + ' <b>' + f(lo) + '</b></span><span>' + names[1] + ' <b>' + f(mid) + '</b></span><span>' + names[2] + ' <b>' + f(hi) + '</b></span><span>현재 <b class="cur">' + f(val) + '</b></span></div>';
-}
+      '<div class="rng-line">' + out.join('') + '</div>';
+  }
+  function cellF(k, v) { return '<div><div class="k">' + k + '</div><div class="v">' + (v == null ? '—' : v) + '</div></div>'; }
   function cell(k, v) { return v == null || v === '—' ? '' : '<div><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
   function renderStock(sym) {
     var d = D[sym]; if (!d) return;
     $('stock-title').textContent = sym;
-    var oc = d.overall, tag = oc === 'blue' ? '1순위 · 종합 파랑' : (oc === 'green' ? '2순위 · 종합 초록' : '종합 미충족');
+    var oc = d.overall, tag = oc === 'blue' ? '1순위 · 고배당 + 저평가' : (oc === 'green' ? '2순위 · 배당·밸류에이션 양호' : '조건 미충족');
     var h = '<div class="m-head"><span class="sym">' + esc(sym) + '</span><span class="m-badge ' + (oc || '') + '">' + dot(oc) + tag + '</span></div>' +
       '<div class="m-sub">' + esc(d.name || '') + (d.sector ? ' · ' + esc(d.sector) : '') + '</div>';
-    h += '<div class="m-grid">' + cell('현재가', d.price == null ? null : usd(d.price)) + cell('현재 배당률', pct(d.cur_yield)) +
-      cell('연간 배당금', d.dps == null ? null : usd(d.dps)) + cell('배당성향', pct(d.payout)) +
-      cell('Forward P/E', num(d.fwd_pe)) + cell('Trailing P/E', d.trailing_pe == null ? null : num(d.trailing_pe)) +
-      cell('EPS', d.eps == null ? null : usd(d.eps)) + cell('50일 이동평균', d.ma50 == null ? null : usd(d.ma50)) + '</div>';
-    var PS = { blue: '가장 저평가', green: 'Median 이하', yellow: 'Median 이상', red: '고평가' };
-    h += '<div class="m-sec"><h3>' + dot(d.yield_color) + '배당률 신호 ' + (d.yield_color ? '· ' + CNAME[d.yield_color] : '') + (d.yield_color ? '<span class="why">' + YTXT[d.yield_color] + '</span>' : '') + '</h3>' +
-      range(d.min_yield, d.avg_yield, d.max_yield, d.cur_yield, pct, ['최저', '평균', '최고']) + '</div>';
-    h += '<div class="m-sec"><h3>' + dot(d.pe_color) + 'P/E 신호 ' + (d.pe_color ? '· ' + CNAME[d.pe_color] : '') + (d.pe_color ? '<span class="why">' + PS[d.pe_color] + '</span>' : '') + '</h3>' +
-      range(d.pe_low, d.pe_med, d.pe_high, d.fwd_pe, function (x) { return num(x); }, ['Low', 'Median', 'High']) + '</div>';
-    var exTxt = '—';
+    var exTxt = null;
     if (d.ex_div) {
       var diff = Math.round((new Date(d.ex_div) - new Date(today)) / 86400000);
-      var up = d.ex_div > today;
-      exTxt = (up ? '<b>' + esc(d.ex_div) + '</b>' : esc(d.ex_div)) + (up ? ' <span class="muted">(D-' + diff + ')</span>' : ' <span class="muted">(지남)</span>');
+      var up = d.ex_div > today, sh = esc(d.ex_div.slice(2));
+      exTxt = (up ? '<b>' + sh + '</b>' : sh) + '<div class="muted" style="font-weight:400;font-size:10px">' + (up ? 'D-' + diff : '지남') + '</div>';
     }
-    h += '<div class="m-sec"><div class="m-grid" style="grid-template-columns:repeat(2,1fr)">' + cell('배당락일', exTxt) + cell('배당 지급일', d.div_date ? esc(d.div_date) : null) + '</div>';
+    h += '<div class="m-grid">' + cellF('현재가', d.price == null ? null : usd(d.price)) + cellF('현재 배당률', pct(d.cur_yield)) +
+      cellF('연간 배당금', d.dps == null ? null : usd(d.dps)) + cellF('배당성향', pct(d.payout)) +
+      cellF('Forward P/E', num(d.fwd_pe)) + cellF('Trailing P/E', d.trailing_pe == null ? null : num(d.trailing_pe)) +
+      cellF('EPS', d.eps == null ? null : usd(d.eps)) + cellF('배당락일', exTxt) + '</div>';
+    var PS = { blue: 'Low~Median 중간 이하', green: 'Median 이하', yellow: 'Median~High 중간까지', red: 'High 쪽(Median~High 중간 초과)' };
+    h += '<div class="m-sec"><h3>' + dot(d.yield_color) + '배당 매력도 ' + (d.yield_color ? '· ' + YLAB[d.yield_color] : '') + (d.yield_color ? '<span class="why">' + YTXT[d.yield_color] + '</span>' : '') + '</h3>' +
+      range(d.min_yield, d.avg_yield, d.max_yield, d.cur_yield, pct, ['최저', '평균', '최고']) + '</div>';
+    h += '<div class="m-sec"><h3>' + dot(d.pe_color) + '밸류에이션 ' + (d.pe_color ? '· ' + PLAB[d.pe_color] : '') + (d.pe_color ? '<span class="why">' + PS[d.pe_color] + '</span>' : '') + '</h3>' +
+      range(d.pe_low, d.pe_med, d.pe_high, d.fwd_pe, function (x) { return num(x); }, ['Low', 'Median', 'High']) + '</div>';
+    h += '<div class="m-sec"><div class="m-grid" style="grid-template-columns:repeat(2,1fr)">' + cell('배당 지급일', d.div_date ? esc(d.div_date) : null) + '</div>';
     if (d.price_at) h += '<div class="m-note">현재가 기준: ' + esc(d.price_at) + '</div>';
     if (d.dq) h += '<div class="m-note">⚠ ' + esc(d.dq) + '</div>';
     h += '</div>';
