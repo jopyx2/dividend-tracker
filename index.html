@@ -93,9 +93,11 @@
   .rng-mid { position: absolute; top: -3px; width: 2px; height: 16px; background: #8a94a3; }
   .rng-cur { position: absolute; top: -5px; width: 5px; height: 20px; background: #f97316; border-radius: 3px; transform: translateX(-2.5px); }
   .rng-val { position: absolute; top: 0; transform: translateX(-50%); font-size: 12px; font-weight: 700; color: #f97316; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .rng-line { display: flex; justify-content: space-between; gap: 4px; font-size: 11px; color: var(--ink-secondary); white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-  .rng-line b { color: var(--ink-primary); }
-  .rng-line b.cur { color: #f97316; }
+  .rng-labs { position: relative; margin-top: 8px; }
+  .rng-lab { position: absolute; white-space: nowrap; font-size: 11px; color: var(--ink-secondary); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .rng-lab b { color: var(--ink-primary); }
+  .rng-lab b.cur { color: #f97316; }
+  .rng-note { font-size: 10.5px; color: var(--ink-muted); margin-top: 6px; }
   .m-sec h3 .why { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--ink-muted); }
   .muted { color: var(--ink-muted); font-size: 12px; }
 </style>
@@ -105,7 +107,7 @@
 
   <section id="view-home">
     <h1>미국 배당주 적정주가 추적기</h1>
-    <div class="subtitle" id="updated-line" data-updated="2026-10-02T15:03:00Z">최종 업데이트: <b id="updated-kst">2026-10-03 00:03 KST</b> · 대상 19종목</div>
+    <div class="subtitle" id="updated-line" data-updated="2026-10-02T15:07:00Z">최종 업데이트: <b id="updated-kst">2026-10-03 00:07 KST</b> · 대상 19종목</div>
     <div id="stale-warning" hidden></div>
 
     <div class="rank-cards">
@@ -243,21 +245,25 @@
   });
 
   /* ---------- 종목 상세(페이지) ---------- */
-  function range(lo, mid, hi, val, f, names) {
+  function range(lo, mid, hi, val, f, names, note) {
     if ([lo, mid, hi, val].some(function (v) { return v == null; })) return '<div class="muted">데이터 없음</div>';
     var mn = Math.min(lo, val), mx = Math.max(hi, val), sp = (mx - mn) || 1;
     var p = function (v) { return (v - mn) / sp * 100; };
     var pc = p(val);
-    var items = [[names[0], lo], [names[1], mid], [names[2], hi]], out = [], merged = false;
-    items.forEach(function (it) {
-      if (!merged && f(it[1]) === f(val)) { merged = true; out.push('<span>' + (it[0] === names[0] ? '5년 ' : '') + it[0] + '(현재) <b class="cur">' + f(val) + '</b></span>'); }
-      else out.push('<span>' + (it[0] === names[0] ? '5년 ' : '') + it[0] + ' <b>' + f(it[1]) + '</b></span>');
+    var labs = [{ pos: p(lo), n: '5년 ' + names[0], v: lo }, { pos: p(mid), n: names[1], v: mid }, { pos: p(hi), n: names[2], v: hi }];
+    var hit = false;
+    labs.forEach(function (l) { if (!hit && f(l.v) === f(val)) { hit = true; l.n += '(현재)'; l.cur = true; } });
+    var W = 320, rowEnd = [-100, -100], used = 1, html = '';
+    labs.forEach(function (l) {
+      var txt = l.n + ' ' + f(l.v), w = (txt.length * 6.3 + 2) / W * 100;
+      var x = l.pos - l.pos * w / 100, row = x >= rowEnd[0] + 1 ? 0 : (x >= rowEnd[1] + 1 ? 1 : 0);
+      rowEnd[row] = x + w; if (row === 1) used = 2;
+      html += '<span class="rng-lab" style="left:' + l.pos.toFixed(1) + '%;transform:translateX(-' + l.pos.toFixed(1) + '%);top:' + (row * 16) + 'px">' + l.n + ' <b' + (l.cur ? ' class="cur"' : '') + '>' + f(l.v) + '</b></span>';
     });
-    if (!merged) out.push('<span>현재 <b class="cur">' + f(val) + '</b></span>');
-    return '<div class="rng-wrap"><span class="rng-val" style="left:' + pc.toFixed(1) + '%;transform:translateX(-' + pc.toFixed(1) + '%)">' + f(val) + '</span>' +
+    return '<div class="rng-wrap"><span class="rng-val" style="left:' + pc.toFixed(1) + '%;transform:translateX(-' + pc.toFixed(1) + '%)">현재 ' + f(val) + '</span>' +
       '<div class="rng-bar"><span class="rng-seg" style="left:' + p(lo).toFixed(1) + '%;width:' + (p(hi) - p(lo)).toFixed(1) + '%"></span>' +
       '<span class="rng-mid" style="left:' + p(mid).toFixed(1) + '%"></span><span class="rng-cur" style="left:' + pc.toFixed(1) + '%"></span></div></div>' +
-      '<div class="rng-line">' + out.join('') + '</div>';
+      '<div class="rng-labs" style="height:' + (used * 16) + 'px">' + html + '</div>' + (note ? '<div class="rng-note">' + note + '</div>' : '');
   }
   function cellF(k, v) { return '<div><div class="k">' + k + '</div><div class="v">' + (v == null ? '—' : v) + '</div></div>'; }
   function cell(k, v) { return v == null || v === '—' ? '' : '<div><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
@@ -281,7 +287,7 @@
     h += '<div class="m-sec"><h3>' + dot(d.yield_color) + '배당 매력도 ' + (d.yield_color ? '· ' + YLAB[d.yield_color] : '') + (d.yield_color ? '<span class="why">' + YTXT[d.yield_color] + '</span>' : '') + '</h3>' +
       range(d.min_yield, d.avg_yield, d.max_yield, d.cur_yield, pct, ['최저', '평균', '최고']) + '</div>';
     h += '<div class="m-sec"><h3>' + dot(d.pe_color) + '밸류에이션 ' + (d.pe_color ? '· ' + PLAB[d.pe_color] : '') + (d.pe_color ? '<span class="why">' + PS[d.pe_color] + '</span>' : '') + '</h3>' +
-      range(d.pe_low, d.pe_med, d.pe_high, d.fwd_pe, function (x) { return num(x); }, ['Low', 'Median', 'High']) + '</div>';
+      range(d.pe_low, d.pe_med, d.pe_high, d.fwd_pe, function (x) { return num(x); }, ['Low', 'Median', 'High'], '현재 = Forward P/E · 5년 구간 = Trailing P/E 기준') + '</div>';
     h += '<div class="m-sec"><div class="m-grid" style="grid-template-columns:repeat(2,1fr)">' + cell('배당 지급일', d.div_date ? esc(d.div_date) : null) + '</div>';
     if (d.price_at) h += '<div class="m-note">현재가 기준: ' + esc(d.price_at) + '</div>';
     if (d.dq) h += '<div class="m-note">⚠ ' + esc(d.dq) + '</div>';
