@@ -46,16 +46,16 @@
   details.criteria summary::-webkit-details-marker { display: none; }
   details.criteria summary::after { content: "▾"; color: var(--ink-muted); }
   details.criteria[open] summary::after { content: "▴"; }
-  .criteria-body { padding: 0 16px 14px; font-size: 13px; color: var(--ink-secondary); line-height: 1.5; }
-  .crit-sec { border-top: 1px solid var(--border); padding: 12px 0 6px; }
+  .criteria-body { padding: 0 16px 12px; font-size: 13px; color: var(--ink-secondary); line-height: 1.4; }
+  .crit-sec { border-top: 1px solid var(--border); padding: 10px 0 4px; }
   .crit-sec.first { border-top: none; padding-top: 0; }
-  .crit-h { font-size: 14px; font-weight: 700; color: var(--ink-primary); margin-bottom: 4px; }
-  .crit-sub { font-size: 12px; color: var(--ink-muted); line-height: 1.55; margin: 2px 0 6px; }
-  .crit-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
-  .crit-row .nm { font-weight: 600; color: var(--ink-primary); min-width: 64px; }
-  .crit-row .rg { margin-left: auto; font-size: 12px; color: var(--ink-secondary); text-align: right; }
-  .crit-foot { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 6px; font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
-  .crit-foot b { color: var(--ink-primary); }
+  .crit-h { font-size: 13px; font-weight: 700; color: var(--ink-primary); margin-bottom: 2px; }
+  .crit-s { font-size: 11px; font-weight: 400; color: var(--ink-muted); margin-left: 6px; }
+  .crit-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .crit-row .dot { width: 10px; height: 10px; flex: none; }
+  .crit-row .nm { font-weight: 600; color: var(--ink-primary); }
+  .crit-row .rg { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-align: right; }
+  .crit-foot { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; font-size: 11px; color: var(--ink-muted); }
   .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px 0 10px; vertical-align: middle; }
   footer { margin-top: 20px; font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
 
@@ -127,29 +127,25 @@
       <summary>판단기준</summary>
       <div class="criteria-body">
         <div class="crit-sec first">
-          <div class="crit-h">순위 기준</div>
-          <div class="crit-row"><span class="dot" style="background:#1d4ed8"></span><span class="nm">1순위</span><span class="rg">고배당 + 저평가 동시 충족</span></div>
-          <div class="crit-row"><span class="dot" style="background:#1a7f5a"></span><span class="nm">2순위</span><span class="rg">배당·밸류에이션 둘 다 양호 이상</span></div>
-          <div class="crit-row"><span class="dot" style="background:#c7ccd4"></span><span class="nm">미충족</span><span class="rg">위 조건에 못 미치거나 데이터 부족</span></div>
-          <div class="crit-sub">1순위 = 배당 매력도 '매우 높음' + 밸류에이션 '저평가'<br>2순위 = 둘 다 '양호(적정 이하)' 이상 (1순위 제외)</div>
+          <div class="crit-h">순위</div>
+          <div class="crit-row"><span class="dot" style="background:#1d4ed8"></span><span class="nm">1순위</span><span class="rg">고배당 + 저평가</span></div>
+          <div class="crit-row"><span class="dot" style="background:#1a7f5a"></span><span class="nm">2순위</span><span class="rg">둘 다 양호 이상</span></div>
         </div>
         <div class="crit-sec">
-          <div class="crit-h">배당 매력도</div>
-          <div class="crit-sub">현재 배당률(연 배당금 ÷ 현재가)을 이 종목의 5년 최저·평균·최고와 비교. 높을수록 유리.</div>
-          <div class="crit-row"><span class="dot" style="background:#1d4ed8"></span><span class="nm">매우 높음</span><span class="rg">5년 최고 초과</span></div>
+          <div class="crit-h">배당 매력도 <span class="crit-s">현재 배당률 vs 5년 · 높을수록 좋음</span></div>
+          <div class="crit-row"><span class="dot" style="background:#1d4ed8"></span><span class="nm">매우 높음</span><span class="rg">최고 초과</span></div>
           <div class="crit-row"><span class="dot" style="background:#1a7f5a"></span><span class="nm">양호</span><span class="rg">평균 ~ 최고</span></div>
           <div class="crit-row"><span class="dot" style="background:#e6a700"></span><span class="nm">보통</span><span class="rg">최저 ~ 평균</span></div>
           <div class="crit-row"><span class="dot" style="background:#e5484d"></span><span class="nm">낮음</span><span class="rg">최저 이하</span></div>
         </div>
         <div class="crit-sec">
-          <div class="crit-h">밸류에이션 (P/E)</div>
-          <div class="crit-sub">현재 P/E(현재가 ÷ 직전 4분기 EPS)를 이 종목의 5년 Low·Median·High와 비교. 낮을수록 유리.</div>
+          <div class="crit-h">밸류에이션 <span class="crit-s">현재 P/E vs 5년 · 낮을수록 좋음</span></div>
           <div class="crit-row"><span class="dot" style="background:#1d4ed8"></span><span class="nm">저평가</span><span class="rg">Low~Median 중간 이하</span></div>
           <div class="crit-row"><span class="dot" style="background:#1a7f5a"></span><span class="nm">적정 이하</span><span class="rg">Median 이하</span></div>
           <div class="crit-row"><span class="dot" style="background:#e6a700"></span><span class="nm">다소 부담</span><span class="rg">Median~High 중간까지</span></div>
           <div class="crit-row"><span class="dot" style="background:#e5484d"></span><span class="nm">고평가</span><span class="rg">그 이상</span></div>
         </div>
-        <div class="crit-foot">목록의 <b>굵은 글씨</b>는 해당 항목이 '양호' 이상이라는 뜻입니다.<br>과거 데이터에 근거한 참고 지표이며 투자 권유가 아닙니다.</div>
+        <div class="crit-foot">굵은 글씨 = '양호' 이상 · 참고용 지표이며 투자 권유가 아닙니다.</div>
       </div>
     </details>
 
