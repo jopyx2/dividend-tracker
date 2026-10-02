@@ -105,7 +105,7 @@
 
   <section id="view-home">
     <h1>미국 배당주 적정주가 추적기</h1>
-    <div class="subtitle" id="updated-line" data-updated="2026-10-02T14:59:00Z">최종 업데이트: <b id="updated-kst">2026-10-02 23:59 KST</b> · 대상 19종목</div>
+    <div class="subtitle" id="updated-line" data-updated="2026-10-02T15:03:00Z">최종 업데이트: <b id="updated-kst">2026-10-03 00:03 KST</b> · 대상 19종목</div>
     <div id="stale-warning" hidden></div>
 
     <div class="rank-cards">
@@ -247,14 +247,14 @@
     if ([lo, mid, hi, val].some(function (v) { return v == null; })) return '<div class="muted">데이터 없음</div>';
     var mn = Math.min(lo, val), mx = Math.max(hi, val), sp = (mx - mn) || 1;
     var p = function (v) { return (v - mn) / sp * 100; };
-    var pc = p(val), lp = Math.min(88, Math.max(12, pc));
+    var pc = p(val);
     var items = [[names[0], lo], [names[1], mid], [names[2], hi]], out = [], merged = false;
     items.forEach(function (it) {
       if (!merged && f(it[1]) === f(val)) { merged = true; out.push('<span>' + (it[0] === names[0] ? '5년 ' : '') + it[0] + '(현재) <b class="cur">' + f(val) + '</b></span>'); }
       else out.push('<span>' + (it[0] === names[0] ? '5년 ' : '') + it[0] + ' <b>' + f(it[1]) + '</b></span>');
     });
     if (!merged) out.push('<span>현재 <b class="cur">' + f(val) + '</b></span>');
-    return '<div class="rng-wrap"><span class="rng-val" style="left:' + lp.toFixed(1) + '%">' + f(val) + '</span>' +
+    return '<div class="rng-wrap"><span class="rng-val" style="left:' + pc.toFixed(1) + '%;transform:translateX(-' + pc.toFixed(1) + '%)">' + f(val) + '</span>' +
       '<div class="rng-bar"><span class="rng-seg" style="left:' + p(lo).toFixed(1) + '%;width:' + (p(hi) - p(lo)).toFixed(1) + '%"></span>' +
       '<span class="rng-mid" style="left:' + p(mid).toFixed(1) + '%"></span><span class="rng-cur" style="left:' + pc.toFixed(1) + '%"></span></div></div>' +
       '<div class="rng-line">' + out.join('') + '</div>';
